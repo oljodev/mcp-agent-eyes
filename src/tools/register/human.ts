@@ -19,21 +19,17 @@ export function registerHumanInteractionTool(server: McpServer): void {
     {
       title: "Hand the browser to the human to solve a challenge, then resume",
       description:
-        "Pause automation and hand the LIVE browser window to the human to do " +
-        "something the AI cannot or must not automate — solve a Cloudflare " +
-        '"Verify you are human" / Turnstile check, a CAPTCHA, or an ' +
-        "interstitial. The AI never solves the challenge and never bypasses " +
-        "anti-bot protection; it only puts a window on screen, shows the " +
-        "human a localhost prompt with your `reason` + a Done button, and BLOCKS " +
-        "until the first of: the human clicks Done, the page reaches " +
-        "expectUrlContains (if set), the human clicks Cancel, or timeoutMs " +
-        "elapses. Returns a status (completed | cancelled | timeout) + the " +
-        "current url + a page-health block (and, if screenshot:true, an image of " +
-        "the resulting page). This is the ONLY tool that shows the human a " +
-        "browser window: managed mode (the default) browses invisibly and is " +
-        "relaunched WITH a window here — same profile and logins, tabs reopened " +
-        "on their URLs, so unsaved in-page state is lost. In pure headless mode " +
-        "there is no window to give and it returns a clear error (never hangs).",
+        "Hand the live browser to the human for something the AI cannot or " +
+        "must not automate — a Cloudflare \"Verify you are human\" check, a " +
+        "CAPTCHA, an interstitial. It never solves the challenge and never " +
+        "bypasses anti-bot protection: it puts a window on screen, shows a " +
+        "localhost prompt with your reason and a Done button, and BLOCKS " +
+        "until the human clicks Done, the page reaches expectUrlContains, the " +
+        "human cancels, or timeoutMs elapses. Returns status (completed | " +
+        "cancelled | timeout) and the current url. The ONLY tool that shows a " +
+        "window: managed mode browses invisibly and is relaunched visibly " +
+        "here, so unsaved in-page state is lost. Headless mode returns a " +
+        "clear error instead of hanging.",
       inputSchema: {
         reason: handoffReasonField,
         expectUrlContains: expectUrlContainsField,

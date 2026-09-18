@@ -29,17 +29,12 @@ export function registerDiffRegionsTool(server: McpServer): void {
     {
       title: "Semantic visual diff (element-resolved regression)",
       description:
-        "Visual regression that points at code, not pixels. Diffs the current " +
-        "render against a saved baseline (by tag, per-viewport), clusters the " +
-        "changed pixels into bounding-box regions (connected-component " +
-        "analysis), and hit-tests each region's center against the live DOM to " +
-        "name the element underneath — so instead of '3.2% of pixels changed' " +
-        "you get an actionable list: 'button.cta-primary — 1,240 changed px'. " +
-        "A human-viewable delta overlay is also saved to disk. Requires a " +
-        "baseline saved via compare_to_baseline (set_baseline) — with matching " +
-        "fullPage. Set fullPage:true to diff the entire scroll height (catching " +
-        "below-the-fold regressions) instead of just the fold. Optionally pass " +
-        "maxVariancePct as a CI gate. Includes a page-health block.",
+        "Visual regression that points at code, not pixels: diffs the current " +
+        "render against a saved baseline, clusters the changed pixels into " +
+        "regions, and hit-tests each against the live DOM — so you get " +
+        "\"button.cta-primary — 1,240 changed px\" instead of \"3.2% of pixels " +
+        "changed\". A delta overlay is saved to disk. Requires a baseline from " +
+        "compare_to_baseline with matching fullPage.",
       inputSchema: {
         url: urlField,
         tag: tagField,

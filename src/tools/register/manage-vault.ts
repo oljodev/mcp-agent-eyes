@@ -14,16 +14,12 @@ export function registerManageVaultTool(server: McpServer): void {
     {
       title: "Manage the encrypted credential vault (status / reset / rekey)",
       description:
-        "Make the credential vault recoverable and manageable. action=status " +
-        "reports whether a vault exists, whether it's unlocked, and its profile " +
-        "names (never secrets). action=reset permanently DELETES the vault file " +
-        "— the escape hatch when the master passphrase is forgotten — after the " +
-        "human types RESET into the secure prompt; you then re-enroll from " +
-        "scratch. action=change_passphrase re-encrypts every stored profile " +
-        "under a new master passphrase (entered twice in the secure prompt; the " +
-        "old one is required first if the vault is locked). The AI triggers " +
-        "these; the human confirms in the localhost prompt. Returns a non-secret " +
-        "summary + a page-health block.",
+        "Keep the credential vault recoverable. status reports whether a " +
+        "vault exists, whether it is unlocked, and its profile names — never " +
+        "secrets. reset permanently DELETES the vault after the human types " +
+        "RESET into the secure prompt, the escape hatch for a forgotten " +
+        "passphrase; re-enroll afterwards. change_passphrase re-encrypts " +
+        "every profile under a new one.",
       inputSchema: {
         action: vaultActionField,
       },

@@ -32,23 +32,13 @@ export function registerLayoutTool(server: McpServer): void {
     {
       title: "Layout diagnostics across all breakpoints (text-only)",
       description:
-        "Zero-image, token-efficient layout diagnostics across ALL four " +
-        "breakpoints in one call. At each of mobile (393x852), tablet " +
-        "(768x1024), desktop (1440x900), and ultrawide (1920x1080), an " +
-        "in-page script measures the DOM via getBoundingClientRect() and " +
-        "scroll metrics, flagging: horizontal viewport overflow, container " +
-        "spill/clip, silently truncated text, destructive bounding-box " +
-        `collisions, and — on mobile — tap targets smaller than ` +
-        `${MIN_TAP_TARGET_PX}x${MIN_TAP_TARGET_PX}px. Findings use UNIQUE, ` +
-        "addressable selectors (anchored at the nearest stable id, " +
-        ":nth-of-type chains, uniqueness asserted in-page) plus " +
-        "human-readable labels. With annotate=true (default), every " +
-        "breakpoint with findings also gets a red-outline annotated render " +
-        "saved to the run directory (path reported, zero image tokens). Pass " +
-        '"ignoreSelector" (a string or array) to exclude known, unfixable ' +
-        "noise (fixed sidebars, cookie banners, third-party widgets) so new " +
-        "issues stand out; the suppressed count is reported. Includes a " +
-        "page-health block.",
+        "Zero-image layout diagnostics across all four breakpoints in one " +
+        "call. An in-page script measures the DOM and flags horizontal " +
+        "overflow, container spill or clipping, silently truncated text, " +
+        "destructive collisions, and sub-44px tap targets on mobile. Findings " +
+        "carry unique, addressable selectors. With annotate (default on), " +
+        "each breakpoint with findings also gets a red-outline render saved " +
+        "to disk and reported by path, costing no image tokens.",
       inputSchema: {
         url: urlField,
         annotate: annotateField,

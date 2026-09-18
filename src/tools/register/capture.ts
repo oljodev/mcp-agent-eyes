@@ -34,16 +34,12 @@ export function registerCaptureTools(server: McpServer): void {
     {
       title: "Capture page screenshot",
       description:
-        "Take a screenshot of a URL at a specific responsive breakpoint, " +
-        "with image-degradation controls that minimize token cost: webp " +
-        "(default, lossy q75), jpeg, or png, plus optional maxWidth " +
-        'downscaling and sizeMode "thumb" for a tiny wire image. The ' +
-        "full-resolution render is always saved under " +
-        ".agent-eyes/captures/run-<n>-<page>/<shot-folder>/ and its absolute " +
-        "path is reported. Initializes (or navigates) the persistent browser " +
-        "session — cookies, logins, and page state survive across calls, " +
-        "and re-requesting the already-open URL never reloads the page. " +
-        "Every response includes a page-health block.",
+        "Screenshot a URL at one breakpoint. Opens or navigates the " +
+        "persistent session — cookies, logins and page state survive across " +
+        "calls, and re-requesting the already-open URL does not reload it. " +
+        "The full-resolution render is always saved under " +
+        ".agent-eyes/captures/ and its path reported; format, quality, " +
+        "maxWidth and sizeMode control what the wire image costs.",
       inputSchema: {
         url: urlField,
         viewport: viewportField,
@@ -91,15 +87,11 @@ export function registerCaptureTools(server: McpServer): void {
     {
       title: "Responsive audit across all breakpoints",
       description:
-        "Capture the same URL at ALL four responsive breakpoints — mobile " +
-        "(393x852), tablet (768x1024), desktop (1440x900), and ultrawide " +
-        `(1920x1080) — in a single call, aggressively compressed (webp ` +
-        `q${MATRIX_QUALITY}) to keep four-image turns cheap; sizeMode ` +
-        '"thumb" shrinks the wire images further. All four full-resolution ' +
-        "renders are saved into one run directory and their paths reported. " +
-        "Uses the same persistent browser session as " +
-        "capture_page_screenshot; the previously active viewport is " +
-        "restored afterwards. Includes a page-health block.",
+        "Capture one URL at all four breakpoints in a single call, " +
+        "webp-compressed to keep a four-image turn affordable (sizeMode " +
+        "\"thumb\" shrinks it further). All four full-resolution renders are " +
+        "saved to one run directory and their paths reported; the previously " +
+        "active viewport is restored afterwards.",
       inputSchema: {
         url: urlField,
         fullPage: fullPageField,

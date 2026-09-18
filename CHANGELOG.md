@@ -9,6 +9,24 @@ decision, not an automatic consequence of a change.
 
 ## [Unreleased]
 
+## [0.29.0] — 2026-09-18
+
+### Changed
+
+- **The tool list costs ~35% fewer tokens: 19.0k → 12.4k.** That payload is
+  resent on every request in every conversation the server is connected to,
+  used or not, so it was the single largest token cost in the project — larger
+  than any screenshot. Shared field descriptions were the worst offender: the
+  `reload` field shipped the same 362-character paragraph in 14 tools, costing
+  ~1.2k tokens per request on its own. Field prose is now terse, and tool
+  descriptions state what a tool does, returns, and requires rather than
+  explaining the reasoning behind it (that lives in the README).
+- The page-health line on a clean response is now `Page health: OK` instead of
+  a sentence spelling out what OK means — ~26 tokens back on every tool call.
+
+No tool was removed, renamed, or had an argument changed; only the prose that
+describes them.
+
 ## [0.28.0] — 2026-09-18
 
 ### Changed
@@ -38,5 +56,6 @@ get the windowless behavior.
 Releases before 0.28.0 predate this public repository and have no changelog
 entries.
 
-[Unreleased]: https://github.com/oljodev/mcp-agent-eyes/compare/v0.28.0...HEAD
+[Unreleased]: https://github.com/oljodev/mcp-agent-eyes/compare/v0.29.0...HEAD
+[0.29.0]: https://github.com/oljodev/mcp-agent-eyes/releases/tag/v0.29.0
 [0.28.0]: https://github.com/oljodev/mcp-agent-eyes/releases/tag/v0.28.0

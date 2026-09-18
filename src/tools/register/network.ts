@@ -24,15 +24,12 @@ export function registerNetworkTools(server: McpServer): void {
     {
       title: "Stub network routes for deterministic captures",
       description:
-        "Intercept matching requests and return a canned response, so flaky " +
-        "or third-party endpoints don't change what you capture. action=add " +
-        "registers a URL glob → {status, contentType, body, headers}; " +
-        "action=clear removes stubs (by pattern, or all); action=list shows " +
-        "active stubs. Stubs are context-level — they persist across " +
-        "navigations and are re-applied after a crash, until cleared. NOTE: " +
-        "only SUB-RESOURCES of a reachable page can be mocked (a reachability " +
-        "preflight runs before the top-level navigation). Includes a " +
-        "page-health block.",
+        "Stub matching requests with canned responses, so flaky or " +
+        "third-party endpoints cannot change what you capture. add registers " +
+        "a URL glob → {status, contentType, body, headers}; clear removes " +
+        "stubs by pattern or all; list shows the active ones. Stubs are " +
+        "context-level: they survive navigations and a crash until cleared. " +
+        "Only sub-resources can be mocked, never the top-level navigation.",
       inputSchema: {
         action: mockActionField,
         pattern: mockPatternField,
@@ -67,12 +64,11 @@ export function registerNetworkTools(server: McpServer): void {
       title: "Wait for a network response (optionally around a trigger)",
       description:
         "Wait for a network response whose URL matches a pattern, and report " +
-        "its status, method, content-type, and size (plus an optional body " +
-        "snippet). Pass an optional trigger interaction (click/type/…) — the " +
-        "waiter is armed BEFORE the trigger fires, so a fast response can't " +
-        "be missed (e.g. click Save and wait for POST /api/save). On timeout " +
-        "it lists the responses it did see, to help fix the pattern. " +
-        "Operates on the open page. Includes a page-health block.",
+        "its status, method, content-type and size, plus an optional body " +
+        "snippet. An optional trigger interaction fires AFTER the waiter is " +
+        "armed, so a fast response cannot be missed (click Save, await POST " +
+        "/api/save). On timeout it lists the responses it did see, to help " +
+        "fix the pattern. Acts on the open page.",
       inputSchema: {
         urlPattern: urlPatternField,
         trigger: triggerField,

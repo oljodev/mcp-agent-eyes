@@ -28,20 +28,13 @@ export function registerBaselineTool(server: McpServer): void {
     {
       title: "Visual baseline: save or diff",
       description:
-        "Visual regression checkpointing. With action \"set_baseline\", " +
-        "renders the URL at the given breakpoint and saves a lossless " +
-        `baseline PNG under ${BASELINE_DIR}/ (named per baselineName + ` +
-        "viewport). With action \"diff_against_baseline\", re-renders and " +
-        "pixel-diffs against the saved baseline, returning a variance " +
-        "score, dimension-drift info, and a red-on-grayscale delta overlay " +
-        "image — the overlay is also saved to the current run directory " +
-        "and its path reported. With fullPage: true, baseline and diff " +
-        "cover the ENTIRE scrollable height (stored as a separate baseline " +
-        "file), eliminating below-the-fold blind spots. The scroll position " +
-        "is always reset to the top before capturing, so prior scroll " +
-        "interactions never misalign the comparison. Typical flow: set a " +
-        "baseline before refactoring CSS, then diff after each change. " +
-        "Responses include a page-health block.",
+        "Visual regression checkpointing. set_baseline renders the URL at the " +
+        "given breakpoint and saves a lossless PNG baseline; " +
+        "diff_against_baseline re-renders and pixel-diffs against it, " +
+        "returning a variance score, dimension drift, and a red-on-grayscale " +
+        "delta overlay that is also saved to disk. fullPage covers the whole " +
+        "scroll height as a separate baseline. Scroll is reset to the top " +
+        "first, so earlier interactions cannot misalign the comparison.",
       inputSchema: {
         url: urlField,
         viewport: viewportField,

@@ -21,14 +21,13 @@ export function registerLabelInteractivesTool(server: McpServer): void {
     {
       title: "Label interactive elements (set-of-mark)",
       description:
-        "Paint a numbered badge over every interactive element in the viewport " +
-        "— links, buttons, inputs, selects, ARIA widgets, and anything with a " +
-        "pointer cursor — and return the marked screenshot PLUS a legend " +
-        "mapping each number to a stable, unique selector and its accessible " +
-        "label. This is 'set-of-mark' prompting: pick the element you want off " +
-        "the picture by its number, then act on its exact selector with " +
-        "interact_and_audit — no selector guessing. The overlay is removed " +
-        "after capture (non-destructive). Includes a page-health block.",
+        "Set-of-mark prompting: paints a numbered badge over every " +
+        "interactive element in the viewport — links, buttons, inputs, " +
+        "selects, ARIA widgets, anything with a pointer cursor — and returns " +
+        "the marked screenshot plus a legend mapping each number to a stable, " +
+        "unique selector and its accessible label. Pick your target off the " +
+        "picture by number, then act on its exact selector with " +
+        "interact_and_audit. The overlay is removed after capture.",
       inputSchema: {
         url: urlField,
         viewport: optionalViewportField,

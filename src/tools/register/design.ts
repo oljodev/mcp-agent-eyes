@@ -32,15 +32,13 @@ export function registerDesignTools(server: McpServer): void {
     {
       title: "Design review — measure the design system + flag smells",
       description:
-        "Zero-image DESIGN audit: the taste counterpart to scan_accessibility. " +
-        "Measures the page's ACTUAL design system (color palette, type scale, " +
-        "font weights/families, spacing rhythm, border-radii, shadows) and " +
-        "flags 'design smells' — the amateur tells that separate a designed UI " +
-        "from a generated one: too many font sizes/colors, off-grid spacing, " +
-        "cramped or over-long or sub-16px body text, inconsistent radii, and " +
-        "near-miss alignment — each with an addressable selector. Use it to " +
-        "push a page from 'not broken' to 'looks premium'. Optionally resizes " +
-        "to a breakpoint first. Includes a page-health block.",
+        "Zero-image DESIGN audit — the taste counterpart to " +
+        "scan_accessibility. Measures the page's actual design system " +
+        "(palette, type scale, weights and families, spacing rhythm, radii, " +
+        "shadows) and flags design smells: too many font sizes or colors, " +
+        "off-grid spacing, cramped or over-long or sub-16px body text, " +
+        "inconsistent radii, near-miss alignment — each with an addressable " +
+        "selector.",
       inputSchema: {
         url: urlField,
         viewport: optionalViewportField,
@@ -83,16 +81,12 @@ export function registerDesignTools(server: McpServer): void {
     {
       title: "Steal this style — extract design tokens from any URL",
       description:
-        "Point at any URL you admire (or a client's inspiration link) and get " +
-        "a BUILDABLE design-token spec: the color palette with inferred roles " +
-        "(page background, surfaces, body/other text, and the accent — " +
-        "including an accent gradient if present), the type scale + body size " +
-        "+ weights + fonts, the spacing base/scale, radii, and shadow style — " +
-        "returned as an inferred-roles summary AND a pasteable CSS :root " +
-        "variables block. Turns 'make it look like <site>' into a concrete " +
-        "spec instead of guessing. Optionally saves the tokens to " +
-        ".agent-eyes/styles/<name>.json to reuse or lock the style. Includes a " +
-        "page-health block.",
+        "Turn \"make it look like <site>\" into a buildable spec: the palette " +
+        "with inferred roles (page background, surfaces, text, accent, accent " +
+        "gradient), the type scale, body size, weights and fonts, the spacing " +
+        "base and scale, radii and shadows — as an inferred-roles summary " +
+        "plus a pasteable CSS :root block. Optionally saved to " +
+        ".agent-eyes/styles/.",
       inputSchema: {
         url: urlField,
         viewport: optionalViewportField,
@@ -124,16 +118,12 @@ export function registerDesignTools(server: McpServer): void {
     {
       title: "Steal this style — crawl a whole site into one design brief",
       description:
-        "Crawl up to a handful of same-origin pages (nav links first) and " +
-        "return ONE consolidated design brief: the design system merged across " +
-        "pages (fonts BY ROLE incl. a display/serif vs body, color roles, type " +
-        "ramp, spacing, radii, shadows — ranked by cross-page frequency, so the " +
-        "real system wins), PLUS each page's section anatomy (the information " +
-        "architecture) and a pasteable CSS :root + Tailwind theme. Use it to " +
-        "match a reference look 1:1 — then fill in the CLIENT'S OWN copy, " +
-        "images, and logos (this captures DESIGN + STRUCTURE only, never " +
-        "content or assets). Optionally saves the brief to " +
-        ".agent-eyes/styles/<name>.json. Includes a page-health block.",
+        "Crawl a handful of same-origin pages (nav links first) and return " +
+        "ONE consolidated design brief: the system merged across pages — " +
+        "fonts by role, color roles, type ramp, spacing, radii, shadows, " +
+        "ranked by cross-page frequency so the real system wins — plus each " +
+        "page's section anatomy and a pasteable CSS :root + Tailwind theme. " +
+        "Design and structure only, never copy, images, or logos.",
       inputSchema: {
         url: urlField,
         maxPages: maxPagesField,

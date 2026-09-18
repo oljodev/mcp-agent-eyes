@@ -13,16 +13,13 @@ export function registerManageTabsTool(server: McpServer): void {
     {
       title: "Open and switch between multiple named browser tabs",
       description:
-        "Keep several real browser tabs open at once and switch between them by " +
-        "a label you assign — e.g. work on a Lovable preview in one tab and a " +
-        "test site in another without closing either. action=open opens a new " +
-        "named tab (optionally navigating it) and makes it active; action=switch " +
-        "makes an existing tab active; action=close closes a named tab (not the " +
-        "last one); action=list returns every tab with its label/url/viewport and " +
-        "which is active. All OTHER tools (capture_page_screenshot, " +
-        "interact_and_audit, …) act on the ACTIVE tab. Tool calls are still " +
-        "serialized; multi-tab just means the other tab's state survives. The " +
-        "default tab is \"main\". Includes a page-health block.",
+        "Keep several real tabs open at once and switch between them by a " +
+        "label you assign — a preview in one, a staging site in another, " +
+        "neither losing its state. open opens a named tab and makes it " +
+        "active, switch activates an existing one, close closes one (never " +
+        "the last), list returns each tab's label, url, viewport and active " +
+        "flag. Every OTHER tool acts on the ACTIVE tab. The default tab is " +
+        "\"main\".",
       inputSchema: {
         action: tabActionField,
         label: tabLabelField,

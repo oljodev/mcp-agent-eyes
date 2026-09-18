@@ -40,10 +40,10 @@ export function healthBlock(health: PageHealth) {
   }
 
   if (lines.length === 0) {
-    return textBlock(
-      "Page health: OK — no console errors, failed requests, or blank-page " +
-        "signals since the last check.",
-    );
+    // Terse on purpose: this line rides along with EVERY successful response,
+    // so spelling out what "OK" means costs ~26 tokens per tool call to say
+    // nothing. The detailed shape only appears when there is something wrong.
+    return textBlock("Page health: OK");
   }
   return textBlock(["PAGE HEALTH:", ...lines].join("\n"));
 }

@@ -9,8 +9,7 @@ export const sweepMinWidthField = z
   .max(3840)
   .default(320)
   .describe(
-    "Smallest viewport width (CSS px) to probe in the responsive sweep " +
-      "(default 320 — small phone).",
+    "Smallest width to probe, CSS px (default 320).",
   );
 
 export const sweepMaxWidthField = z
@@ -20,8 +19,7 @@ export const sweepMaxWidthField = z
   .max(3840)
   .default(1920)
   .describe(
-    "Largest viewport width (CSS px) to probe in the responsive sweep " +
-      "(default 1920 — full-HD desktop).",
+    "Largest width to probe, CSS px (default 1920).",
   );
 
 export const sweepStepField = z
@@ -31,9 +29,8 @@ export const sweepStepField = z
   .max(500)
   .default(50)
   .describe(
-    "Width increment (CSS px) between probes (default 50). Smaller = finer " +
-      "breakpoint resolution but more steps; the sweep caps total steps to " +
-      "stay fast.",
+    "Width increment between probes (default 50). Smaller is finer but " +
+      "slower; total steps are capped.",
   );
 
 export const maxClsField = z
@@ -42,9 +39,8 @@ export const maxClsField = z
   .max(5)
   .optional()
   .describe(
-    "Assertion / CI gate. If set, the response is marked a FAILURE (isError) " +
-      "when the measured CLS exceeds this threshold — e.g. 0.1 enforces the " +
-      "Core Web Vitals 'good' bar. Omit to just report the score.",
+    "CI gate: FAIL when CLS exceeds this (0.1 is the Core Web Vitals bar). " +
+      "Omit to report without a verdict.",
   );
 
 export const tagField = z
@@ -52,19 +48,14 @@ export const tagField = z
   .min(1)
   .max(64)
   .describe(
-    "Baseline identifier to diff against — the same name passed to " +
-      "compare_to_baseline's set_baseline (stored per-viewport under " +
-      ".agent-eyes/baselines/).",
+    "Baseline to diff against — the name used with set_baseline.",
   );
 
 export const ignoreSelectorField = z
   .union([z.string().min(1), z.array(z.string().min(1))])
   .optional()
   .describe(
-    "CSS selector(s) to exclude from the layout audit — a string or array. " +
-      "Any finding whose element matches, or sits inside, an ignore selector " +
-      "is suppressed (and the suppressed count reported). Use it to silence " +
-      "known, unfixable noise (a fixed sidebar, a cookie banner, a " +
-      "third-party widget) so new, real issues stand out instead of being " +
-      "buried under the same repeats on every page and every step.",
+    "Selector(s) to exclude from the audit, string or array. Matches and " +
+      "their descendants are suppressed and counted — silences known noise " +
+      "like a cookie banner.",
   );

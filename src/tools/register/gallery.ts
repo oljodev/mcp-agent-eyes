@@ -12,15 +12,12 @@ export function registerGalleryTool(server: McpServer): void {
     {
       title: "Generate the audit gallery contact sheet",
       description:
-        "Build (or rebuild) .agent-eyes/gallery.html — a sortable thumbnail " +
-        "contact sheet of every screenshot saved in a capture run: clean " +
-        "shots and annotated overlays, each with URL, viewport, tool, " +
-        "action/selector, timestamp, dimensions, and layout-issue count, " +
-        "with thumbnails linking to the full-resolution files on disk. " +
-        "By default it aggregates EVERY run into one sheet (newest run first) " +
-        "so all screenshots live in one place; pass run to scope it to a " +
-        "single run. Returns the absolute path to the gallery — open it in a " +
-        "browser for human review.",
+        "Build .agent-eyes/gallery.html — a sortable contact sheet of every " +
+        "screenshot in a capture run, clean and annotated, each with URL, " +
+        "viewport, tool, selector, timestamp, dimensions and issue count, " +
+        "thumbnails linking to the full-resolution files. Aggregates every " +
+        "run unless you scope it to one. Returns the gallery path for a human " +
+        "to open.",
       inputSchema: {
         run: runIdField,
       },

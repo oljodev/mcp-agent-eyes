@@ -11,10 +11,9 @@ export const verifyChecksField = z
       assert: z
         .enum(ASSERT_KINDS)
         .describe(
-          'The assertion: "noViewportOverflow" (element\'s right edge ≤ viewport ' +
-            'width — catches a hero/H1 wider than the screen), "minTapTarget" ' +
-            '(≥ px in BOTH width and height; px defaults to 44), "fontSizeAtMost" / ' +
-            '"fontSizeAtLeast" (computed font-size vs px), "exists" / "notExists".',
+          '"noViewportOverflow" (right edge ≤ viewport width), "minTapTarget" ' +
+            '(≥ px on both axes, default 44), "fontSizeAtMost"/"fontSizeAtLeast" ' +
+            '(computed font-size vs px), "exists"/"notExists".',
         ),
       px: z
         .number()
@@ -25,13 +24,12 @@ export const verifyChecksField = z
   )
   .min(1)
   .describe(
-    "The assertions to evaluate against the live page. Each is a small, " +
-      "measurable check; the tool reports the measured value vs the expectation " +
-      "per check, plus an overall PASS/FAIL verdict.",
+    "Assertions to evaluate against the live page. Each reports measured vs " +
+      "expected, plus an overall PASS/FAIL verdict.",
   );
 
 export const verifySaveAsField = z
   .string()
   .min(1)
   .optional()
-  .describe("Optional name to snapshot the verdict under .agent-eyes/verify/<name>.json.");
+  .describe("Name to snapshot the verdict under .agent-eyes/verify/.");

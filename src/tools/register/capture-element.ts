@@ -26,14 +26,11 @@ export function registerCaptureElementTool(server: McpServer): void {
     {
       title: "Capture a single element (cropped screenshot)",
       description:
-        "Screenshot JUST one element, cropped tight to its bounding box via " +
-        "Playwright's element screenshot — far cheaper in tokens than a full " +
-        "page when you only need to look at one component (a button, a card, a " +
-        "nav). Navigates and applies the optional viewport first, resolves the " +
-        "selector's first match, scrolls it into view, and crops. The " +
-        "full-resolution crop is saved under .agent-eyes/captures/ and its " +
-        "path reported; a small webp thumbnail is returned on the wire. " +
-        "Includes a page-health block.",
+        "Screenshot ONE element, cropped to its bounding box — far cheaper " +
+        "than a full page when you only need a button, card, or nav. " +
+        "Navigates, applies the optional viewport, scrolls the selector's " +
+        "first match into view, and crops. The full-resolution crop is saved " +
+        "to disk; a webp thumbnail goes on the wire.",
       inputSchema: {
         url: urlField,
         selector: selectorField,

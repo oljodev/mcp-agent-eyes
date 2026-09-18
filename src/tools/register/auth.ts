@@ -27,26 +27,17 @@ export function registerAuthTools(server: McpServer): void {
     {
       title: "Log in to a site without seeing the credentials",
       description:
-        "Log the user into a website using THEIR account, without the AI ever " +
-        "seeing the email/password. You supply selectors (non-secret); the " +
-        "server opens a localhost secure page where the human types the " +
-        "username + password into a masked field, fills them into the page, " +
-        "submits, and returns ONLY a page status: success, otp_required (then " +
-        "call submit_2fa_code), error, push_wait, or unknown. Selectors are " +
-        "auto-detected when omitted (the response reports which were used, so " +
-        "you can correct a wrong guess on retry). NEVER returns a screenshot " +
-        "(a rejected/2FA page can expose secret values) — after success, use " +
-        "capture_page_screenshot, then manage_session action=save to persist " +
-        "the cookies for reuse. The call blocks until the human answers the " +
-        "secure prompt (its URL is opened in their browser and logged to " +
-        "stderr) or it times out after 180s. The FIRST sign-in to each new " +
-        "site in a session shows a Continue/Cancel consent prompt (set " +
-        "assumeConsent:true for unattended runs). For sites with " +
-        '"Continue with Google"-style SSO, pass sso:"google" to reuse a shared ' +
-        "provider session instead of a per-site password. Identifier-first " +
-        "logins (email + Next, then password + Next — Google, Microsoft, Okta) " +
-        "are driven across both steps automatically; no extra setup needed. " +
-        "Includes a page-health block.",
+        "Log the user into a site with THEIR account, without the AI ever " +
+        "seeing the credentials. The human types username and password into a " +
+        "localhost secure page; the server fills them in, submits, and " +
+        "returns ONLY a status: success, otp_required (then call " +
+        "submit_2fa_code), error, push_wait, or unknown. Selectors are " +
+        "auto-detected when omitted, and the ones used are reported so a " +
+        "retry can correct them. NEVER returns a screenshot, since a 2FA or " +
+        "error page can render secrets — capture separately after success, " +
+        "then manage_session action=save. Blocks until the human answers the " +
+        "prompt or 180s elapse. The first sign-in to each new site asks for " +
+        "consent unless assumeConsent is set.",
       inputSchema: {
         profile: authProfileField,
         source: credentialSourceField,
@@ -103,15 +94,13 @@ export function registerAuthTools(server: McpServer): void {
     {
       title: "Enter a 2FA code without seeing it",
       description:
-        "Complete a two-factor challenge raised by authenticate_login, without " +
-        "the AI ever seeing the code. The server opens a localhost secure page " +
-        "where the human types the current one-time code, fills it into the " +
-        "page's code field (auto-detected when codeSelector is omitted), " +
-        "submits (or presses Enter if no submitSelector), and returns ONLY a " +
-        "status: success (then manage_session action=save), error, or unknown. " +
-        "Acts on the page authenticate_login left behind — never navigates. " +
-        "Blocks until the human answers the secure prompt or times out after " +
-        "180s. Includes a page-health block.",
+        "Complete a two-factor challenge raised by authenticate_login, " +
+        "without the AI ever seeing the code. The human types the current " +
+        "one-time code into a localhost secure page; the server fills the " +
+        "auto-detected code field, submits, and returns ONLY a status: " +
+        "success (then manage_session action=save), error, or unknown. Acts " +
+        "on the page authenticate_login left behind and never navigates. " +
+        "Blocks until answered or 180s elapse.",
       inputSchema: {
         source: otpSourceField,
         profile: authProfileField.optional(),

@@ -57,36 +57,15 @@ export function registerInteractTools(server: McpServer): void {
     {
       title: "Interact with the page, then screenshot + audit",
       description:
-        "Perform a user interaction on the CURRENTLY OPEN page in the " +
-        "persistent browser session, then — after a 250ms reflow settle — " +
-        "return BOTH a compressed webp screenshot AND a fresh text layout " +
-        "audit (with unique, addressable selectors) of the resulting " +
-        "state, so breakage caused by expanded menus, active tabs, or " +
-        "opened modals is visible immediately. Gestures: click, type " +
-        '(needs "text"), hover, scroll_down / scroll_up (a scroll-container ' +
-        'selector, or the page itself via "body"), select (needs "value"), ' +
-        'check, uncheck, press (needs "key"), clear, focus, ' +
-        "scroll_into_view. Waits (block until true or time out): wait_for " +
-        '("state" defaults to visible), wait_for_text (needs "text"), ' +
-        'wait_for_network, wait_for_url (needs "urlContains"), and ' +
-        "wait_for_response (needs \"urlContains\"; FAILS the call on a >= 400 " +
-        'status, or != "expectStatus"). Pointer gestures act on raw VIEWPORT ' +
-        "PIXEL coordinates (read off a screenshot) instead of a selector, so " +
-        "they reach anything visible regardless of DOM structure — shadow " +
-        "DOM, canvas, WebGL, maps/charts, and drag-and-drop: pointer_click " +
-        '(needs "x","y"; optional "button" left/right/middle), pointer_hover ' +
-        '(needs "x","y"), pointer_drag (needs "startX","startY","endX","endY"; ' +
-        'optional "steps"). An ambiguous selector (matching more ' +
-        "than one element) still acts on the first but is flagged in the " +
-        'response. Pass "ignoreSelector" (string or array) to suppress known ' +
-        "layout noise (a fixed sidebar, a cookie banner) from the audit. " +
-        'Selectors accept Playwright text= and role= engines. Pass "viewport" to ' +
-        "switch breakpoints (with a reflow settle) BEFORE the selector " +
-        "resolves — e.g. click a mobile-only hamburger without a separate " +
-        "resize call. The full-resolution render is saved into the current " +
-        "run directory (consecutive interactions group together) and its " +
-        "path reported. Use capture_page_screenshot first to open a page. " +
-        "Includes a page-health block.",
+        "Perform ONE interaction on the currently open page, then return a " +
+        "webp screenshot AND a fresh text layout audit of the resulting " +
+        "state, so breakage from an expanded menu, an active tab, or an " +
+        "opened modal shows up immediately. Gestures, blocking waits, and " +
+        "pointer gestures on viewport pixel coordinates are all available — " +
+        "see `action` for what each one needs. An ambiguous selector acts on " +
+        "the first match and says so. Pass viewport to switch breakpoints " +
+        "before the selector resolves, ignoreSelector to mute known layout " +
+        "noise. Open a page with capture_page_screenshot first.",
       inputSchema: {
         action: actionField,
         selector: optionalSelectorField,
@@ -181,28 +160,14 @@ export function registerInteractTools(server: McpServer): void {
     {
       title: "Run a multi-step interaction sequence",
       description:
-        "High-speed batch pipeline for complex flows (filling forms, " +
-        "opening nested menus): navigates to the URL, optionally matches a " +
-        "viewport, then executes the steps array sequentially in one fast " +
-        "local loop (150ms reflow pause between steps). Returns ONE " +
-        "compressed webp screenshot and ONE text layout audit captured " +
-        "after the FINAL step — a single compact bundle instead of " +
-        "per-step screenshots, saving the tokens that chained " +
-        "interact_and_audit calls would burn. The final render is saved to " +
-        "the current run directory. Steps can mix gestures, waits, and " +
-        "expect_* assertions, so one call can drive AND verify a flow: a " +
-        "failing gesture/wait aborts with its index (earlier steps stay " +
-        "applied and inspectable), while failing expect_* checks (and a " +
-        "wait_for_response with a bad status) let the flow finish but mark the " +
-        "whole response a FAILURE (isError). Steps can also be pointer " +
-        "gestures (pointer_click, pointer_hover, pointer_drag) driven by " +
-        "viewport pixel coordinates read off a screenshot — reaching shadow " +
-        "DOM, canvas, WebGL, maps/charts, and drag-and-drop targets that have " +
-        "no stable selector. An evaluate_script step (needs \"script\") reads " +
-        "JSON-serializable page state (counts, text, attributes, computed " +
-        "styles) into the result keyed by its \"label\" — observing the DOM " +
-        "without an expensive screenshot. Pass \"ignoreSelector\" to suppress " +
-        "known layout noise from the final audit. Includes a page-health block.",
+        "Batch pipeline for multi-step flows such as forms and nested menus: " +
+        "navigates, optionally matches a viewport, then runs the steps in one " +
+        "fast loop and returns ONE screenshot plus ONE layout audit after the " +
+        "final step — far cheaper than chaining interact_and_audit. Steps mix " +
+        "gestures, waits, expect_* assertions and evaluate_script, so a " +
+        "single call can drive AND verify a flow. A failing gesture or wait " +
+        "aborts at its index with earlier steps applied; failed expect_* " +
+        "checks let the flow finish but mark the whole response a FAILURE.",
       inputSchema: {
         url: urlField,
         viewport: optionalViewportField,

@@ -28,16 +28,12 @@ export function registerMeasureTool(server: McpServer): void {
     {
       title: "Measure an element (tokenless inspector)",
       description:
-        "Zero-image element inspector: extracts one element's exact live " +
-        "rendering spec via getComputedStyle() and getBoundingClientRect() " +
-        "— rendered dimensions and position, typography (font-family/size/" +
-        "weight/line-height), computed padding and margin, and effective " +
-        "foreground/background colors (ancestor-composited) with a WCAG " +
-        "contrast ratio verdict against AA (4.5:1) and AAA (7:1), including " +
-        "the large-text relaxation. Optionally resizes to a breakpoint " +
-        "first, so responsive-only styles are measured where they apply. " +
-        "Pure text — use it to verify design-system specs or a11y without " +
-        "spending image tokens. Includes a page-health block.",
+        "Zero-image element inspector: one element's live rendering spec from " +
+        "getComputedStyle and getBoundingClientRect — dimensions, position, " +
+        "typography, computed padding and margin, and ancestor-composited " +
+        "foreground/background colors with a WCAG AA (4.5:1) / AAA (7:1) " +
+        "contrast verdict including the large-text relaxation. Verifies " +
+        "design-system and a11y specs without image tokens.",
       inputSchema: {
         url: urlField,
         selector: selectorField,

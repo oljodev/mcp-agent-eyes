@@ -8,10 +8,9 @@ import { SESSION_ACTIONS } from "../session.js";
 export const sessionActionField = z
   .enum(SESSION_ACTIONS)
   .describe(
-    "set = add cookies / localStorage / headers to the session; clear = drop " +
-      "all session state and rebuild a clean context; save = snapshot the " +
-      "current cookies + localStorage to disk under a name; load = restore a " +
-      "saved snapshot (recreates the context, then navigate to use it).",
+    "set = add cookies/localStorage/headers; clear = drop all state and " +
+      "rebuild a clean context; save = snapshot cookies + localStorage to " +
+      "disk; load = restore a snapshot, then navigate to use it.",
   );
 
 export const cookiesField = z
@@ -34,8 +33,7 @@ export const cookiesField = z
   )
   .optional()
   .describe(
-    "Cookies to add (Playwright addCookies shape). Each needs either url, or " +
-      "both domain and path. Used by action set.",
+    "Cookies in Playwright addCookies shape; each needs url, or domain+path.",
   );
 
 export const localStorageField = z
@@ -47,17 +45,14 @@ export const localStorageField = z
   )
   .optional()
   .describe(
-    "localStorage entries to seed per origin, applied on the next " +
-      "navigation/reload. Each: origin (e.g. http://localhost:5173) and " +
-      "items [{name, value}]. Used by action set.",
+    "localStorage to seed per origin, applied on the next navigation.",
   );
 
 export const headersField = z
   .record(z.string())
   .optional()
   .describe(
-    "Extra HTTP headers sent with every request (e.g. an Authorization " +
-      "bearer token). Merged into previously-set headers. Used by action set.",
+    "Extra headers for every request, merged into any already set.",
   );
 
 export const sessionNameField = z
@@ -66,8 +61,7 @@ export const sessionNameField = z
   .max(64)
   .optional()
   .describe(
-    "Snapshot name, stored as .agent-eyes/sessions/<name>.json. Required for " +
-      "actions save and load.",
+    "Snapshot name under .agent-eyes/sessions/. Required for save and load.",
   );
 
 export const scriptField = z
@@ -75,7 +69,6 @@ export const scriptField = z
   .min(1)
   .max(SCRIPT_MAX_CHARS)
   .describe(
-    "JavaScript to run in the page. It runs as an async function body, so " +
-      "you can use await and MUST `return` a JSON-serializable value (no DOM " +
-      "nodes, functions, or circular refs). Example: return document.title;",
+    "JS to run in the page as an async function body: use await, and you " +
+      "MUST `return` a JSON-serializable value. E.g. return document.title;",
   );

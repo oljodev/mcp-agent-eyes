@@ -18,8 +18,8 @@ export const urlPatternField = z
   .string()
   .min(1)
   .describe(
-    "Match against response URLs: a substring, or a glob with * wildcards " +
-      "(e.g. **/api/users or */graphql). The first matching response wins.",
+    "Substring or * glob matched against response URLs (e.g. **/api/users). " +
+      "First match wins.",
   );
 
 export const triggerField = z
@@ -35,17 +35,16 @@ export const triggerField = z
   })
   .optional()
   .describe(
-    "Optional interaction to perform AFTER the response waiter is armed " +
-      "(armed first to avoid races) — e.g. click a Save button that fires the " +
-      "request. Same fields as interact_and_audit.",
+    "Interaction to run after the waiter is armed (avoiding a race), e.g. " +
+      "click Save. Same fields as interact_and_audit.",
   );
 
 export const includeBodyField = z
   .boolean()
   .default(false)
   .describe(
-    "If true, include a snippet of the response body (text-ish content " +
-      "types only, capped). Default false to stay token-cheap.",
+    "Include a capped snippet of the response body (text types only). " +
+      "Default false.",
   );
 
 export const mockActionField = z
@@ -60,10 +59,9 @@ export const mockPatternField = z
   .min(1)
   .optional()
   .describe(
-    "URL glob to intercept (e.g. **/api/** or */analytics*). Required for " +
-      "add; optional filter for clear. NOTE: only SUB-RESOURCES of a " +
-      "reachable page can be mocked — the top-level navigation URL still hits " +
-      "the real server (a reachability preflight runs before navigation).",
+    "URL glob to intercept (e.g. **/api/**). Required for add, an optional " +
+      "filter for clear. Only sub-resources can be mocked — the top-level " +
+      "navigation still hits the real server.",
   );
 
 export const mockStatusField = z

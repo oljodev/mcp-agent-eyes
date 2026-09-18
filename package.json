@@ -1,6 +1,6 @@
 {
   "name": "mcp-agent-eyes",
-  "version": "0.28.0",
+  "version": "0.29.0",
   "description": "MCP server that gives AI agents visual eyes with persistent visual memory: run-grouped full-res captures on disk, token-cheap WebP thumbnails on the wire, annotated issue overlays, unique addressable selectors, visual baseline diffing, layout diagnostics, page health telemetry, and an HTML audit gallery.",
   "keywords": [
     "mcp",

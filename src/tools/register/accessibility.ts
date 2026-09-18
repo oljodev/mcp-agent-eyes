@@ -26,16 +26,12 @@ export function registerAccessibilityTool(server: McpServer): void {
     {
       title: "Accessibility scan (text-only)",
       description:
-        "Zero-image, token-efficient WCAG foundation audit of the live DOM. " +
-        "Flags: (1) <img> elements missing alt attributes, or with empty " +
-        'alt not declared decorative via role="presentation"; (2) heading ' +
-        "hierarchy breaks — headings that skip a level (h2 → h4) or a " +
-        "document whose first heading starts deeper than h2; (3) inputs, " +
-        "selects, textareas, and buttons with no computable accessible " +
-        "name (no label/aria-label/aria-labelledby/name-giving content — " +
-        "placeholders don't count). Returns a grouped plain-text report " +
-        "with unique, addressable selectors. Optionally resizes to a " +
-        "breakpoint first. Includes a page-health block.",
+        "Zero-image WCAG foundation audit of the live DOM. Flags <img> " +
+        "missing alt (or empty alt not declared decorative), heading " +
+        "hierarchy breaks (h2 → h4, or a document whose first heading starts " +
+        "deeper than h2), and inputs, selects, textareas and buttons with no " +
+        "computable accessible name — placeholders do not count. Grouped text " +
+        "report with unique, addressable selectors.",
       inputSchema: {
         url: urlField,
         viewport: optionalViewportField,

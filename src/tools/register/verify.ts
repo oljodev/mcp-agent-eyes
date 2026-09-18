@@ -26,17 +26,13 @@ export function registerVerifyTool(server: McpServer): void {
     {
       title: "Verify a change actually landed on the live page",
       description:
-        "Confirm a fix REACHED the deployed site — not just a stale local tab. " +
-        "Reloads the URL by default (so it reads the freshly deployed DOM) and " +
-        "evaluates small, measurable assertions per element: noViewportOverflow " +
-        "(right edge ≤ viewport width — the classic hero/H1-wider-than-screen " +
-        "bug), minTapTarget (≥ px in both dimensions, default 44), fontSizeAtMost/" +
-        "fontSizeAtLeast, exists/notExists. Returns a per-check PASS/FAIL table " +
-        "with measured-vs-expected and an overall verdict; a failed verdict marks " +
-        "the response as an error so CI / verify-loops catch it. This is what " +
-        'catches "the tool said fixed but production still has the bug". Pass ' +
-        "saveAs to snapshot the verdict under .agent-eyes/verify/. Page-health " +
-        "block included.",
+        "Confirm a fix REACHED the deployed site rather than a stale local " +
+        "tab. Reloads the URL by default, evaluates small measurable " +
+        "assertions per element, and returns a per-check PASS/FAIL table of " +
+        "measured vs expected plus an overall verdict — a failed verdict " +
+        "marks the response an error, so verify-loops and CI catch it. This " +
+        "is what catches \"the tool said fixed but production still has the " +
+        "bug\".",
       inputSchema: {
         url: urlField,
         viewport: optionalViewportField,

@@ -20,14 +20,11 @@ export function registerBreakpointsTool(server: McpServer): void {
     {
       title: "Find responsive breakpoints (width sweep)",
       description:
-        "Zero-image responsive stress test: step the viewport width from " +
-        "minWidth to maxWidth and probe horizontal overflow at each stop, then " +
-        "report the exact width ranges where the layout breaks — the " +
-        "breakpoints the four named viewports skip over. Returns a compact " +
-        "text ledger like '[768px - 815px]: CRITICAL OVERFLOW — selector " +
-        "\"div.card-grid\" bleeds past viewport by 34px'. The sweep caps its " +
-        "total probes to stay fast and restores the prior viewport afterwards. " +
-        "Includes a page-health block.",
+        "Zero-image responsive stress test: steps the viewport width from " +
+        "minWidth to maxWidth, probing horizontal overflow at each stop, and " +
+        "reports the exact width ranges where the layout breaks — the ones " +
+        "the four named viewports skip over. Restores the prior viewport " +
+        "afterwards.",
       inputSchema: {
         url: urlField,
         minWidth: sweepMinWidthField,

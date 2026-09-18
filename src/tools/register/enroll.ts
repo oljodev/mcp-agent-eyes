@@ -21,16 +21,14 @@ export function registerEnrollTool(server: McpServer): void {
     {
       title: "Store credentials in the encrypted vault (for unattended login)",
       description:
-        "Save a profile's credentials to the encrypted credential vault " +
-        "(.agent-eyes/vault.json, AES-256-GCM) so future logins run WITHOUT a " +
+        "Save a profile's credentials to the encrypted vault " +
+        "(.agent-eyes/vault.json, AES-256-GCM) so later logins run with no " +
         "human present: authenticate_login source=vault and submit_2fa_code " +
-        "source=totp then pull from it. The human types every secret (a vault " +
-        "master passphrase the first time, then the username, password, and — " +
-        "if withTotp — the authenticator setup key) into the localhost secure " +
-        "prompt; the AI only triggers the flow and never sees any value. " +
-        "Optionally store the loginUrl and form selectors so the unattended " +
-        "login needs nothing but the profile name. Returns a non-secret " +
-        "summary. The vault is encrypted at rest and gitignored.",
+        "source=totp pull from it. The human types every secret — the master " +
+        "passphrase, username, password, and with withTotp the authenticator " +
+        "seed — into the localhost prompt; the AI never sees any value. " +
+        "Optionally stores loginUrl and form selectors too. Returns a " +
+        "non-secret summary.",
       inputSchema: {
         profile: authProfileField,
         loginUrl: authLoginUrlField,

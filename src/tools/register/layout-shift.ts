@@ -25,14 +25,12 @@ export function registerLayoutShiftTool(server: McpServer): void {
     {
       title: "Measure Cumulative Layout Shift (CLS)",
       description:
-        "Cold-load Core Web Vitals diagnostic: arms a layout-shift " +
-        "PerformanceObserver BEFORE the page parses, reloads, watches for ~2s, " +
-        "then reports the aggregate CLS score (good ≤ 0.10, needs-improvement " +
-        "≤ 0.25, poor > 0.25) AND the exact elements that jumped during load, " +
-        "ranked by their attributed shift score — the invisible jank you can't " +
-        "see in a static screenshot. Zero image tokens. NOTE: this rebuilds a " +
-        "pristine page (cold load), discarding any prior in-page state. " +
-        "Optionally pass maxCls as a CI gate. Includes a page-health block.",
+        "Cold-load CLS diagnostic: arms a layout-shift observer BEFORE the " +
+        "page parses, reloads, watches ~2s, then reports the aggregate score " +
+        "(good ≤ 0.10, poor > 0.25) and the exact elements that jumped, " +
+        "ranked by attributed shift — jank no static screenshot shows. Zero " +
+        "image tokens. Rebuilds a pristine page, discarding any in-page " +
+        "state.",
       inputSchema: {
         url: urlField,
         viewport: optionalViewportField,

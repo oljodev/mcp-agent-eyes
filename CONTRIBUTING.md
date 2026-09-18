@@ -70,7 +70,11 @@ the AI. See [SECURITY.md](SECURITY.md) for the reasoning.
 ## Releasing (maintainer)
 
 ```bash
-npm version minor        # or patch — see CHANGELOG conventions
-npm publish              # prepublishOnly runs clean + build
+npm version minor        # or patch — see CHANGELOG conventions; commits and tags
 git push --follow-tags
 ```
+
+agent-eyes is installed straight from GitHub (`npx github:oljodev/mcp-agent-eyes`),
+so a release is a tag on `main` — there is no registry to publish to. The
+`prepare` script is what makes that work: it builds `dist/` on install, so keep
+it working and never commit `dist/` itself.

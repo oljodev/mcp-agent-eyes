@@ -1,6 +1,5 @@
 # agent-eyes
 
-[![npm](https://img.shields.io/npm/v/mcp-agent-eyes)](https://www.npmjs.com/package/mcp-agent-eyes)
 [![CI](https://github.com/oljodev/mcp-agent-eyes/actions/workflows/ci.yml/badge.svg)](https://github.com/oljodev/mcp-agent-eyes/actions/workflows/ci.yml)
 [![node](https://img.shields.io/badge/node-%E2%89%A520-brightgreen)](https://nodejs.org)
 [![license](https://img.shields.io/github/license/oljodev/mcp-agent-eyes)](LICENSE)
@@ -21,10 +20,9 @@ npx -y github:oljodev/mcp-agent-eyes setup --agent claude-code --write
 
 Swap `--agent` for `cursor`, `codex`, `zed`, or `vscode`. Drop `--write` to print the config instead of touching any file; drop `--agent` to see all five and where each config file lives. **Restart your agent afterwards** so it picks up the server.
 
-The first run builds from source and can take a minute; after that it's cached and starts instantly.
+agent-eyes installs straight from GitHub — there's no npm package to add and nothing lands in your global `node_modules`. The first run builds from source and can take a minute; after that npx caches it and startup is instant.
 
-> [!NOTE]
-> agent-eyes isn't on npm yet, so these commands install straight from GitHub. Once it's published, `github:oljodev/mcp-agent-eyes` shortens to `mcp-agent-eyes` everywhere — including in the config the installer writes for you.
+To update later, clear the cached copy and rerun the command: `rm -rf ~/.npm/_npx` (or pin a tag with `github:oljodev/mcp-agent-eyes#v0.28.0`).
 
 **Requirements:** Node.js ≥ 20, and Chrome / Chromium / Edge (the installer tells you if it can't find one). **Nothing is installed globally and no browser is downloaded** — agent-eyes builds on `playwright-core` and drives the Chrome you already have.
 
@@ -265,7 +263,7 @@ Every response ends with a page-health block (console errors, failed requests, 4
 | `Chromium is not installed for Playwright` | `npx playwright-core install chromium`. Only `headless`/`headed` need a downloaded browser; managed mode uses your system Chrome. |
 | `Nothing is listening at http://localhost:…` | Start your dev server first. |
 | The agent says it has no tools | Restart your agent after editing its MCP config. |
-| `npm error 404 … mcp-agent-eyes` | You're on a config that names the unpublished npm package. Use `github:oljodev/mcp-agent-eyes` until the npm release lands. |
+| `npm error 404 … mcp-agent-eyes` | Your config names a bare package name. agent-eyes is installed from GitHub — the spec must be `github:oljodev/mcp-agent-eyes`. |
 | Server fails to start the first time, works after | The first `npx` run builds from source and can outlast your agent's MCP startup timeout. Run the install command once in a terminal, then restart your agent. |
 
 ---

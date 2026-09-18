@@ -11,8 +11,8 @@ Include what you did, what happened, and what you expected. I aim to acknowledge
 within a few days. Please give me a reasonable window to ship a fix before
 disclosing publicly.
 
-Supported: the latest published version on npm. Fixes go out as a new release
-rather than as patches to older versions.
+Supported: the current `main` branch, which is what `npx github:oljodev/mcp-agent-eyes`
+installs. Fixes land there rather than as patches to older tags.
 
 ## What agent-eyes touches on your machine
 

@@ -1,0 +1,18 @@
+{
+  "browser": {
+    "mode": "managed",
+    "chromePath": "auto",
+    "profileDir": null,
+    "cdpUrl": null,
+    "keepAlive": true,
+    "headless": true,
+    "visibility": "on-demand",
+    "extraFlags": []
+  },
+  "tabs": {
+    "maxOpen": 8
+  },
+  "captures": {
+    "thumbnailMaxWidth": 1024
+  }
+}

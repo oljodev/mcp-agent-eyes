@@ -1,0 +1,63 @@
+{
+  "name": "mcp-agent-eyes",
+  "version": "0.28.0",
+  "description": "MCP server that gives AI agents visual eyes with persistent visual memory: run-grouped full-res captures on disk, token-cheap WebP thumbnails on the wire, annotated issue overlays, unique addressable selectors, visual baseline diffing, layout diagnostics, page health telemetry, and an HTML audit gallery.",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "playwright",
+    "screenshot",
+    "responsive",
+    "visual-regression",
+    "layout",
+    "webp",
+    "claude",
+    "copilot",
+    "zed",
+    "vscode"
+  ],
+  "license": "MIT",
+  "author": "Stein Magnus Jodal <stein.magnus@jodal.no>",
+  "type": "module",
+  "bin": {
+    "mcp-agent-eyes": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "pretest": "tsc",
+    "test": "node --test test/*.test.mjs",
+    "start": "node dist/index.js",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build",
+    "install-browsers": "playwright-core install chromium"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "pixelmatch": "^7.2.0",
+    "playwright-core": "^1.60.0",
+    "pngjs": "^7.0.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/pngjs": "^6.0.5",
+    "typescript": "^5.9.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oljodev/mcp-agent-eyes.git"
+  },
+  "bugs": {
+    "url": "https://github.com/oljodev/mcp-agent-eyes/issues"
+  },
+  "homepage": "https://github.com/oljodev/mcp-agent-eyes#readme"
+}

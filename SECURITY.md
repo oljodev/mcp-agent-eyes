@@ -5,7 +5,7 @@
 Please report security issues **privately**, not in a public issue.
 
 - Preferred: [GitHub private vulnerability reporting](https://github.com/oljodev/mcp-agent-eyes/security/advisories/new)
-- Or email: stein.magnus@jodal.no
+- Or email: olav@jodal.no
 
 Include what you did, what happened, and what you expected. I aim to acknowledge
 within a few days. Please give me a reasonable window to ship a fix before

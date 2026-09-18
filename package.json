@@ -17,7 +17,7 @@
     "vscode"
   ],
   "license": "MIT",
-  "author": "Stein Magnus Jodal <stein.magnus@jodal.no>",
+  "author": "Olav Jodal <olav@jodal.no>",
   "type": "module",
   "bin": {
     "mcp-agent-eyes": "dist/index.js"
@@ -38,7 +38,8 @@
     "start": "node dist/index.js",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run clean && npm run build",
-    "install-browsers": "playwright-core install chromium"
+    "install-browsers": "playwright-core install chromium",
+    "prepare": "npm run build"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",

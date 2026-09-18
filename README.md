@@ -19,6 +19,9 @@ Claude Code, one line:
 claude mcp add agent-eyes -- npx -y mcp-agent-eyes
 ```
 
+> Not on npm yet? Install straight from GitHub by swapping the package name for
+> `github:oljodev/mcp-agent-eyes` in any command on this page.
+
 Any other agent — this detects your Chrome, writes a tuned `.agent-eyes/settings.json`, and prints the exact MCP config snippet:
 
 ```bash
@@ -258,4 +261,4 @@ The unit suite never launches a browser, so it runs anywhere. Point your agent a
 
 ## License
 
-MIT © Stein Magnus Jodal
+MIT © Olav Jodal

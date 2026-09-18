@@ -2,8 +2,8 @@
 
 [![npm](https://img.shields.io/npm/v/mcp-agent-eyes)](https://www.npmjs.com/package/mcp-agent-eyes)
 [![CI](https://github.com/oljodev/mcp-agent-eyes/actions/workflows/ci.yml/badge.svg)](https://github.com/oljodev/mcp-agent-eyes/actions/workflows/ci.yml)
-[![node](https://img.shields.io/node/v/mcp-agent-eyes)](https://nodejs.org)
-[![license](https://img.shields.io/npm/l/mcp-agent-eyes)](LICENSE)
+[![node](https://img.shields.io/badge/node-%E2%89%A520-brightgreen)](https://nodejs.org)
+[![license](https://img.shields.io/github/license/oljodev/mcp-agent-eyes)](LICENSE)
 
 **Visual eyes for AI coding agents.** agent-eyes is an [MCP](https://modelcontextprotocol.io) server that lets an AI agent *see* and *measure* web pages: take screenshots at real breakpoints, run zero-image DOM/layout/accessibility audits, diff against visual baselines, log into real sites (without ever seeing your password), drive multiple tabs, and **verify a fix actually reached the deployed site**. It keeps one persistent browser session alive across tool calls, and saves every screenshot full-resolution under `.agent-eyes/` for human review.
 

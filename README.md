@@ -13,32 +13,31 @@ It drives a **real Chrome** — invisibly. No window opens while your agent work
 
 ## Install
 
-**Claude Code** — one line:
+One command. It detects your Chrome, writes a tuned `.agent-eyes/settings.json`, and adds the server to your agent's MCP config (keeping a backup of it):
 
 ```bash
-claude mcp add agent-eyes -- npx -y mcp-agent-eyes
+npx -y github:oljodev/mcp-agent-eyes setup --agent claude-code --write
 ```
+
+Swap `--agent` for `cursor`, `codex`, `zed`, or `vscode`. Drop `--write` to print the config instead of touching any file; drop `--agent` to see all five and where each config file lives. **Restart your agent afterwards** so it picks up the server.
+
+The first run builds from source and can take a minute; after that it's cached and starts instantly.
 
 > [!NOTE]
-> Not published to npm yet. Until it is, use `github:oljodev/mcp-agent-eyes` in place of `mcp-agent-eyes` in any command below:
-> `claude mcp add agent-eyes -- npx -y github:oljodev/mcp-agent-eyes`
+> agent-eyes isn't on npm yet, so these commands install straight from GitHub. Once it's published, `github:oljodev/mcp-agent-eyes` shortens to `mcp-agent-eyes` everywhere — including in the config the installer writes for you.
 
-**Any other agent** — this detects your Chrome, writes a tuned `.agent-eyes/settings.json`, and merges the MCP config into the right file for you (with a backup):
-
-```bash
-npx mcp-agent-eyes setup --agent cursor --write
-```
-
-Valid `--agent` values: `claude-code`, `cursor`, `codex`, `zed`, `vscode`. Drop `--write` to print the snippet instead of editing anything, and drop `--agent` to see all of them plus where each config file lives.
-
-Restart your agent afterwards so it picks up the server.
-
-**Requirements:** Node.js ≥ 20, and Chrome / Chromium / Edge (setup tells you if it can't find one). **Nothing is installed globally and no browser is downloaded** — agent-eyes builds on `playwright-core` and drives the Chrome you already have, so `npx` fetches a few MB and runs.
+**Requirements:** Node.js ≥ 20, and Chrome / Chromium / Edge (the installer tells you if it can't find one). **Nothing is installed globally and no browser is downloaded** — agent-eyes builds on `playwright-core` and drives the Chrome you already have.
 
 <details>
-<summary><b>Configuring by hand instead</b></summary>
+<summary><b>Prefer to wire it up yourself?</b></summary>
 
-The server command is `npx -y mcp-agent-eyes`, or `node /abs/path/to/mcp-agent-eyes/dist/index.js` if you're running a clone.
+Claude Code, in one line:
+
+```bash
+claude mcp add agent-eyes -- npx -y github:oljodev/mcp-agent-eyes
+```
+
+Or edit the config by hand. The server command is `npx -y github:oljodev/mcp-agent-eyes`, or `node /abs/path/to/mcp-agent-eyes/dist/index.js` if you're running a clone.
 
 | Agent | Config file | Key |
 |-------|-------------|-----|
@@ -50,24 +49,24 @@ The server command is `npx -y mcp-agent-eyes`, or `node /abs/path/to/mcp-agent-e
 
 Claude Code / Cursor:
 ```json
-{ "mcpServers": { "agent-eyes": { "command": "npx", "args": ["-y", "mcp-agent-eyes"] } } }
+{ "mcpServers": { "agent-eyes": { "command": "npx", "args": ["-y", "github:oljodev/mcp-agent-eyes"] } } }
 ```
 
 VS Code:
 ```json
-{ "servers": { "agent-eyes": { "command": "npx", "args": ["-y", "mcp-agent-eyes"] } } }
+{ "servers": { "agent-eyes": { "command": "npx", "args": ["-y", "github:oljodev/mcp-agent-eyes"] } } }
 ```
 
 Zed:
 ```json
-{ "context_servers": { "agent-eyes": { "source": "custom", "command": "npx", "args": ["-y", "mcp-agent-eyes"], "env": {} } } }
+{ "context_servers": { "agent-eyes": { "source": "custom", "command": "npx", "args": ["-y", "github:oljodev/mcp-agent-eyes"], "env": {} } } }
 ```
 
 Codex:
 ```toml
 [mcp_servers.agent-eyes]
 command = "npx"
-args = ["-y", "mcp-agent-eyes"]
+args = ["-y", "github:oljodev/mcp-agent-eyes"]
 ```
 
 </details>
@@ -266,6 +265,8 @@ Every response ends with a page-health block (console errors, failed requests, 4
 | `Chromium is not installed for Playwright` | `npx playwright-core install chromium`. Only `headless`/`headed` need a downloaded browser; managed mode uses your system Chrome. |
 | `Nothing is listening at http://localhost:…` | Start your dev server first. |
 | The agent says it has no tools | Restart your agent after editing its MCP config. |
+| `npm error 404 … mcp-agent-eyes` | You're on a config that names the unpublished npm package. Use `github:oljodev/mcp-agent-eyes` until the npm release lands. |
+| Server fails to start the first time, works after | The first `npx` run builds from source and can outlast your agent's MCP startup timeout. Run the install command once in a terminal, then restart your agent. |
 
 ---
 

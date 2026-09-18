@@ -126,10 +126,39 @@ function serverCommand(): { cmd: string; args: string[] } {
   const script = process.argv[1] ? resolve(process.argv[1]) : "";
   const packaged = script.includes(`${join("node_modules", "")}`) || script.endsWith(join(".bin", "mcp-agent-eyes"));
   if (packaged) {
-    return { cmd: "npx", args: ["-y", "mcp-agent-eyes"] };
+    return { cmd: "npx", args: ["-y", installedSpec()] };
   }
   // Local clone: node + the absolute path to this very entry point (always works).
   return { cmd: process.execPath, args: [script] };
+}
+
+/**
+ * The package spec this copy was installed from — normally "mcp-agent-eyes",
+ * but npx can be pointed at ANY spec: a git URL (`github:owner/repo`) before a
+ * release lands, a fork, or a pinned version. The config we hand the user has
+ * to name the spec that ACTUALLY installed, or their agent starts a server that
+ * cannot be fetched. npx records what it was asked for in its cache root's
+ * package.json (`_npx.packages`), so walk up and read it back.
+ */
+function installedSpec(): string {
+  const fallback = "mcp-agent-eyes";
+  let dir = dirname(process.argv[1] ? resolve(process.argv[1]) : "");
+  for (let depth = 0; depth < 8 && dir !== dirname(dir); depth += 1, dir = dirname(dir)) {
+    let specs: string[] | undefined;
+    try {
+      const pkg = JSON.parse(readFileSync(join(dir, "package.json"), "utf8")) as {
+        _npx?: { packages?: string[] };
+      };
+      specs = pkg._npx?.packages;
+    } catch {
+      continue; // no readable package.json here — keep walking up
+    }
+    if (specs?.length) {
+      // Several specs can share one npx invocation; prefer the one that names us.
+      return specs.find((spec) => spec.includes(fallback)) ?? (specs.length === 1 ? specs[0]! : fallback);
+    }
+  }
+  return fallback;
 }
 
 const AGENTS: AgentSpec[] = [

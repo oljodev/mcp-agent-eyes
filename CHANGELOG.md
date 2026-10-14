@@ -9,6 +9,14 @@ decision, not an automatic consequence of a change.
 
 ## [Unreleased]
 
+### Removed
+
+- **All credential handling.** `authenticate_login`, `submit_2fa_code`,
+  `enroll_credentials` and `manage_vault` are gone, along with the encrypted
+  vault, TOTP, SSO helper, login classifier and error redaction. Sign in by hand
+  through `await_human_interaction`; the session persists in the Chrome profile.
+  `await_human_interaction` and `manage_session` are unchanged.
+
 ## [0.29.0] — 2026-09-18
 
 ### Changed

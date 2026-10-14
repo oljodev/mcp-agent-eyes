@@ -39,18 +39,7 @@
  *                               back-to-back, with ONE screenshot + ONE
  *                               layout audit after the final step
  *   - manage_session:           set/clear cookies, localStorage, and headers,
- *                               or save/load a storageState snapshot, to
- *                               reach authenticated pages
- *   - authenticate_login:       log in with the user's account WITHOUT the AI
- *                               seeing the credentials — the human enters them
- *                               in a localhost secure prompt; returns a page
- *                               status (success / otp_required / error / ...)
- *   - submit_2fa_code:          complete a 2FA challenge the same AI-blind way
- *                               — the human types the code in the secure prompt
- *   - enroll_credentials:       store a profile's credentials (+ optional TOTP
- *                               seed) in an AES-256-GCM vault so later logins
- *                               run unattended (authenticate_login source=vault,
- *                               submit_2fa_code source=totp)
+ *                               or save/load a storageState snapshot
  *   - evaluate_script:          (opt-in via AGENT_EYES_ALLOW_EVAL) run a JS
  *                               snippet in the page and return its JSON result
  *   - mock_route:               stub network routes with canned responses for
@@ -78,8 +67,7 @@
 
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
-import { securePrompt } from "./auth/secure-prompt.js";
-import { vault } from "./auth/vault.js";
+import { handoffPrompt } from "./human/handoff-prompt.js";
 import { session } from "./browser/session.js";
 import { ensureSettingsFile } from "./config.js";
 import { buildServer } from "./server.js";
@@ -93,8 +81,7 @@ async function shutdown(code: number): Promise<void> {
     return;
   }
   shuttingDown = true;
-  vault.lock();
-  await securePrompt.close().catch(() => undefined);
+  await handoffPrompt.close().catch(() => undefined);
   await session.close().catch(() => undefined);
   process.exit(code);
 }

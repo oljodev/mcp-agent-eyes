@@ -20,7 +20,6 @@ export * from "./marks.js";
 export * from "./breakpoints.js";
 export * from "./web-vitals.js";
 export * from "./diff-regions.js";
-export * from "./auth.js";
 export * from "./human.js";
 export * from "./tabs.js";
 export * from "./verify.js";

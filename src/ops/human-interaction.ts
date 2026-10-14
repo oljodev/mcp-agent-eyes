@@ -4,8 +4,7 @@
  * / "Verify you are human" check, a CAPTCHA, an interstitial), then resume.
  *
  * The AI never solves the challenge and never bypasses anti-bot protection — it
- * only surfaces the window, asks the human (via the same loopback secure-prompt
- * channel used for secrets) to act, and blocks until the FIRST of: the human
+ * only surfaces the window, asks the human (via a loopback prompt) to act, and blocks until the FIRST of: the human
  * clicks Done, the page reaches an expected URL, the human cancels, or it times
  * out.
  *
@@ -17,7 +16,7 @@
 
 import type { Page } from "playwright-core";
 
-import { securePrompt } from "../auth/secure-prompt.js";
+import { handoffPrompt } from "../human/handoff-prompt.js";
 import { BrowserToolError } from "../browser/errors.js";
 import type { BrowserSession } from "../browser/session.js";
 import type { EncodedImage } from "../types/images.js";
@@ -77,8 +76,7 @@ export function awaitHumanInteraction(
 
     // One AbortController unwinds whichever waiters did NOT win the race.
     const abort = new AbortController();
-    const human = securePrompt.request({
-      kind: "handoff",
+    const human = handoffPrompt.request({
       message: input.reason,
       // Give the prompt a slightly longer TTL than our own timer so OUR timeout
       // governs the status (timeout vs the prompt's generic timeout error).

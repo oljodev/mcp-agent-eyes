@@ -4,7 +4,6 @@
  * CI-gate machinery shared by every tool registration.
  */
 
-import { redact } from "../auth/redact.js";
 import { BrowserToolError } from "../browser/errors.js";
 import type { CaptureResult, EncodedImage } from "../types/images.js";
 import type { ContrastVerdict } from "../types/measurement.js";
@@ -129,10 +128,8 @@ export function errorResult(error: unknown) {
       : error instanceof Error
         ? error.message
         : `Unexpected error: ${String(error)}`;
-  // redact() scrubs any still-armed secret from the message (a no-op when no
-  // auth op is mid-flight), so a thrown error can never carry one out.
   return {
-    content: [textBlock(redact(`Error: ${message}`)), metadataBlock()],
+    content: [textBlock(`Error: ${message}`), metadataBlock()],
     isError: true,
   };
 }

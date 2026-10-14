@@ -1,14 +1,11 @@
 /**
- * SecurePrompt — the out-of-band secret channel.
+ * HandoffPrompt — the "your turn" channel for await_human_interaction.
  *
- * The MCP server speaks the protocol over stdio, so the human cannot type a
- * secret there. Instead this starts a loopback-only HTTP listener: when an op
- * needs a password / 2FA code, it `request()`s one; we mint a single-use nonce,
- * surface a `127.0.0.1` URL to the human (auto-open their browser + a stderr
- * fallback, or an embedder's announce hook), and resolve the returned promise
- * only when they submit the value into a real masked password field. The value
- * travels browser → loopback POST → this process → Playwright fill(). It never
- * touches an MCP tool argument or result, so the AI stays blind to it.
+ * The MCP server speaks the protocol over stdio, so the human cannot answer
+ * there. This starts a loopback-only HTTP listener: `request()` mints a
+ * single-use nonce, surfaces a `127.0.0.1` URL to the human (auto-open their
+ * browser + a stderr fallback), and resolves with "continue" or "cancel" once
+ * they click. No secret ever passes through it.
  */
 
 import { spawn } from "node:child_process";
@@ -22,8 +19,20 @@ import {
 import type { AddressInfo } from "node:net";
 
 import { BrowserToolError } from "../browser/errors.js";
+
+export interface PromptRequest {
+  /** The plain-language instruction shown to the human. */
+  message?: string;
+  /** Time-to-live (ms) the human has to respond. */
+  ttlMs?: number;
+  /** Abort the pending prompt early (e.g. another race winner resolved first). */
+  signal?: AbortSignal;
+}
+
+export interface PromptAnnouncement {
+  url: string;
+}
 import { EXPIRED, htmlNotice, htmlScreen, RECEIVED } from "./prompt-html.js";
-import type { PromptAnnouncement, PromptKind, PromptRequest } from "./types.js";
 
 /** How long the human has to answer a prompt before it is abandoned. */
 const TTL_MS = 180_000;
@@ -31,27 +40,21 @@ const TTL_MS = 180_000;
 const MAX_BODY_BYTES = 64 * 1024;
 
 interface Pending {
-  kind: PromptKind;
-  label: string;
-  profile: string | undefined;
   message: string | undefined;
-  confirm: boolean;
-  minLength: number;
   resolve: (value: string) => void;
   reject: (error: Error) => void;
   timer: ReturnType<typeof setTimeout>;
   consumed: boolean;
 }
 
-class SecurePrompt {
+class HandoffPrompt {
   private server: Server | null = null;
   private port = 0;
   private readonly pending = new Map<string, Pending>();
 
   /**
    * Optional hook for an embedder (or a test harness) to receive the prompt
-   * URL instead of the default auto-open-browser + stderr behaviour. Set to a
-   * function to take over how the human is told where to enter the secret.
+   * URL instead of the default auto-open-browser + stderr behaviour.
    */
   announceHook: ((info: PromptAnnouncement) => void) | null = null;
 
@@ -60,7 +63,6 @@ class SecurePrompt {
     await this.ensureServer();
     const nonce = randomBytes(32).toString("base64url");
     const url = `http://127.0.0.1:${this.port}/p/${nonce}`;
-    const label = req.label ?? describe(req);
     const ttl = req.ttlMs ?? TTL_MS;
 
     const value = new Promise<string>((resolve, reject) => {
@@ -68,19 +70,14 @@ class SecurePrompt {
         this.pending.delete(nonce);
         reject(
           new BrowserToolError(
-            `Secure input timed out — the prompt for ${label} was not ` +
-              `completed within ${Math.round(ttl / 1000)}s. Re-run the tool to try again.`,
+            `The handoff prompt was not completed within ` +
+              `${Math.round(ttl / 1000)}s. Re-run the tool to try again.`,
           ),
         );
       }, ttl);
       (timer as { unref?: () => void }).unref?.();
       this.pending.set(nonce, {
-        kind: req.kind,
-        label,
-        profile: req.profile,
         message: req.message,
-        confirm: req.confirm ?? false,
-        minLength: req.minLength ?? 8,
         resolve,
         reject,
         timer,
@@ -99,14 +96,14 @@ class SecurePrompt {
             entry.consumed = true;
             clearTimeout(entry.timer);
             this.pending.delete(nonce);
-            reject(new BrowserToolError("Secure prompt cancelled."));
+            reject(new BrowserToolError("Handoff prompt cancelled."));
           },
           { once: true },
         );
       }
     });
 
-    this.announce({ url, kind: req.kind, profile: req.profile, label });
+    this.announce({ url });
     return value;
   }
 
@@ -115,7 +112,7 @@ class SecurePrompt {
     for (const entry of this.pending.values()) {
       clearTimeout(entry.timer);
       entry.reject(
-        new BrowserToolError("agent-eyes is shutting down; secure input cancelled."),
+        new BrowserToolError("agent-eyes is shutting down; handoff cancelled."),
       );
     }
     this.pending.clear();
@@ -160,7 +157,7 @@ class SecurePrompt {
     const path = (rq.url ?? "/").split("?")[0] ?? "/";
     const match = path.match(/^\/p\/([A-Za-z0-9_-]+)$/);
     if (!match) {
-      this.send(rs, 404, htmlNotice("This secure prompt link is not valid."));
+      this.send(rs, 404, htmlNotice("This prompt link is not valid."));
       return;
     }
     const nonce = match[1]!;
@@ -171,7 +168,7 @@ class SecurePrompt {
         this.send(rs, 404, htmlNotice(EXPIRED));
         return;
       }
-      this.send(rs, 200, htmlScreen(nonce, entry));
+      this.send(rs, 200, htmlScreen(nonce, entry.message));
       return;
     }
     if (rq.method === "POST") {
@@ -211,14 +208,6 @@ class SecurePrompt {
       }
       const params = new URLSearchParams(Buffer.concat(chunks).toString("utf8"));
       const value = params.get("v") ?? "";
-      // Server-side validation (double-entry match, min length, RESET word).
-      // On failure the form is re-rendered with an inline error and the nonce
-      // stays valid so the human can retry without restarting the tool.
-      const error = validateSubmission(entry, value, params.get("v2") ?? "");
-      if (error) {
-        this.send(rs, 200, htmlScreen(nonce, entry, error));
-        return;
-      }
       // Single-use: consume before resolving so a double-submit hits 409.
       entry.consumed = true;
       clearTimeout(entry.timer);
@@ -233,11 +222,10 @@ class SecurePrompt {
       this.announceHook(info);
       return;
     }
-    // stdout is the MCP channel — diagnostics MUST go to stderr. The URL
-    // carries only the single-use nonce, never the secret.
+    // stdout is the MCP channel — diagnostics MUST go to stderr.
     console.error(
-      `agent-eyes: secure input needed — ${info.label}. Open ${info.url} in ` +
-        "your browser to enter it (the AI never sees what you type).",
+      `agent-eyes: your turn in the browser window — open ${info.url} and ` +
+        "click Done when finished.",
     );
     openInBrowser(info.url);
   }
@@ -260,57 +248,6 @@ function isLoopback(addr: string): boolean {
   );
 }
 
-function describe(req: PromptRequest): string {
-  const what =
-    req.kind === "username"
-      ? "username / email"
-      : req.kind === "password"
-        ? "password"
-        : req.kind === "otp"
-          ? "2FA one-time code"
-          : req.kind === "passphrase"
-            ? req.confirm
-              ? "new vault passphrase"
-              : "vault passphrase"
-            : req.kind === "consent"
-              ? "sign-in approval"
-              : req.kind === "reset_confirm"
-                ? "vault-reset confirmation"
-                : req.kind === "handoff"
-                  ? "a manual step in the browser window"
-                  : "authenticator setup key";
-  return req.profile ? `${what} for "${req.profile}"` : what;
-}
-
-/** Server-side gate; returns an inline error to re-render with, or null. */
-function validateSubmission(
-  entry: Pending,
-  value: string,
-  confirmValue: string,
-): string | null {
-  if (entry.kind === "consent" || entry.kind === "handoff") {
-    return null; // any decision (continue=done / cancel) is acceptable
-  }
-  if (entry.kind === "reset_confirm") {
-    return value === "RESET"
-      ? null
-      : "Type RESET in capitals to confirm, or close this tab to cancel.";
-  }
-  if (entry.confirm) {
-    if (value.length < entry.minLength) {
-      return `Use at least ${entry.minLength} characters you'll remember.`;
-    }
-    if (value !== confirmValue) {
-      return "The two passphrases don't match — type the same one in both fields.";
-    }
-    return null;
-  }
-  if (entry.kind === "passphrase" && value.length === 0) {
-    return "Enter your passphrase.";
-  }
-  return null;
-}
-
 /** Best-effort: open the URL in the user's default browser. Never throws. */
 function openInBrowser(url: string): void {
   try {
@@ -329,5 +266,5 @@ function openInBrowser(url: string): void {
   }
 }
 
-/** The one shared secure-prompt channel for this server process. */
-export const securePrompt = new SecurePrompt();
+/** The one shared handoff-prompt channel for this server process. */
+export const handoffPrompt = new HandoffPrompt();

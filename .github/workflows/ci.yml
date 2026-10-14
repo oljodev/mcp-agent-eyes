@@ -20,6 +20,6 @@ jobs:
           cache: npm
       - run: npm ci
       # `pretest` compiles with tsc, so this type-checks and unit-tests in one go.
-      # The suite is pure logic (config, Chrome detection, vault crypto, asserts) —
+      # The suite is pure logic (config, Chrome detection, asserts) —
       # it never launches a browser, so CI needs no display and no Chrome.
       - run: npm test

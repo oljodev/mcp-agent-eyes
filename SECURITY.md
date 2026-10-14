@@ -24,14 +24,8 @@ the code:
   there stays logged in, and any page the agent opens runs with those cookies.
   Point `browser.profileDir` somewhere else to keep it separate from work you
   care about.
-- **An encrypted credential vault.** `enroll_credentials` writes
-  `.agent-eyes/vault.json`: AES-256-GCM, key derived with scrypt from a master
-  passphrase that is held in memory only and never written to disk. There is no
-  plaintext-vault mode. The file is auto-gitignored.
-- **A loopback prompt on localhost.** Logins and human handoffs open a
-  short-lived page bound to `127.0.0.1` for you to type into. Credentials go
-  from that page into the target site — never into an MCP tool argument, a tool
-  result, or a log.
+- **A loopback prompt on localhost.** Human handoffs open a short-lived page
+  bound to `127.0.0.1` with Done / Cancel buttons. It carries no secrets.
 - **Screenshots on disk.** Full-resolution captures are saved under
   `.agent-eyes/captures/`, which is auto-gitignored. They can contain whatever
   was on screen, including authenticated pages.
@@ -46,4 +40,4 @@ protection.** When a page needs a human, `await_human_interaction` hands the
 window to you and blocks — your click is what validates, not the agent's.
 
 Pull requests that add CAPTCHA solving, anti-bot evasion, or credential
-harvesting will be declined.
+handling will be declined.

@@ -28,10 +28,6 @@ import { manageSession } from "../ops/session.js";
 import { evaluateScript } from "../ops/script.js";
 import { mockRoute, waitForResponse } from "../ops/network.js";
 import { generateGallery } from "../ops/gallery.js";
-import { authenticateLogin } from "../ops/auth-login.js";
-import { submit2faCode } from "../ops/auth-2fa.js";
-import { enrollCredentials } from "../ops/enroll-credentials.js";
-import { manageVault } from "../ops/manage-vault.js";
 import { awaitHumanInteraction } from "../ops/human-interaction.js";
 import { manageTabs } from "../ops/tabs.js";
 import { verifyFix } from "../ops/verify.js";
@@ -82,12 +78,6 @@ export class BrowserSession {
     waitForResponse(this, ...a);
   generateGallery: P<typeof generateGallery> = (...a) =>
     generateGallery(this, ...a);
-  authenticateLogin: P<typeof authenticateLogin> = (...a) =>
-    authenticateLogin(this, ...a);
-  submit2faCode: P<typeof submit2faCode> = (...a) => submit2faCode(this, ...a);
-  enrollCredentials: P<typeof enrollCredentials> = (...a) =>
-    enrollCredentials(this, ...a);
-  manageVault: P<typeof manageVault> = (...a) => manageVault(this, ...a);
   awaitHumanInteraction: P<typeof awaitHumanInteraction> = (...a) =>
     awaitHumanInteraction(this, ...a);
   manageTabs: P<typeof manageTabs> = (...a) => manageTabs(this, ...a);

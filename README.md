@@ -4,9 +4,9 @@
 [![node](https://img.shields.io/badge/node-%E2%89%A520-brightgreen)](https://nodejs.org)
 [![license](https://img.shields.io/github/license/oljodev/mcp-agent-eyes)](LICENSE)
 
-**Visual eyes for AI coding agents.** An [MCP](https://modelcontextprotocol.io) server that lets your agent *see* and *measure* web pages instead of guessing at them: screenshots at real breakpoints, zero-image layout and accessibility audits, pixel diffs against committed baselines, logins to real sites without ever seeing your password, and a check that a fix **actually reached the deployed site**.
+**Visual eyes for AI coding agents.** An [MCP](https://modelcontextprotocol.io) server that lets your agent *see* and *measure* web pages instead of guessing at them: screenshots at real breakpoints, zero-image layout and accessibility audits, pixel diffs against committed baselines, and a check that a fix **actually reached the deployed site**.
 
-It drives a **real Chrome** — invisibly. No window opens while your agent works; the browser only becomes visible when a human genuinely has to act, like solving a CAPTCHA. One browser session stays alive across tool calls, so a login in step 1 still holds in step 9.
+It drives a **real Chrome** — invisibly. No window opens while your agent works; the browser only becomes visible when a human genuinely has to act, like solving a CAPTCHA. One browser session stays alive across tool calls, so state built up in step 1 still holds in step 9.
 
 ---
 
@@ -87,9 +87,9 @@ No window opens. The full-resolution capture lands in `.agent-eyes/captures/`, a
 
 `verify_fix` reloads the live URL and returns a PASS/FAIL table, so "it works on my machine" gets checked against what's actually serving.
 
-> *"Log into the staging site and screenshot the dashboard."*
+> *"This page shows a CAPTCHA — let me through, then continue."*
 
-A prompt opens on localhost, **you** type the password into a masked field, and the agent gets back `success` — never the credentials.
+`await_human_interaction` pops a window, **you** click, and the run resumes. The agent never solves it.
 
 ---
 
@@ -103,8 +103,7 @@ Most browser MCP servers hand the agent a picture and stop. The picture is the *
 | **Regressions** | "looks different?" | `compare_to_baseline` / `visual_diff_regions` — pixel diffs against committed baselines |
 | **Did it ship?** | re-screenshot and squint | `verify_fix` reloads the deployed URL and returns a PASS/FAIL assertion table |
 | **Token cost** | full-res image on the wire | full-res on **disk**, a small WebP thumbnail on the wire, many audits return no image at all |
-| **Real logins** | automation fingerprint → blocked | real Chrome, `navigator.webdriver === false`, persistent profile |
-| **Credentials** | typed into a tool argument | typed by *you* into a localhost prompt; the AI never sees them |
+| **Protected sites** | automation fingerprint → blocked | real Chrome, `navigator.webdriver === false`, persistent profile |
 | **When a human is needed** | dead end | `await_human_interaction` opens a window, you click, the run resumes |
 | **Windows in your face** | every call | none — a window appears only for a human handoff |
 
@@ -129,7 +128,7 @@ Four breakpoints are shared by every tool that takes one: `mobile` (393×852), `
 **Interaction**
 `interact_and_audit` (click/type/hover/scroll, then screenshot + audit) · `run_interaction_sequence` (batch steps, one capture at the end) · `label_interactives` (number every clickable thing on screen and return a legend of exact selectors) · `wait_for_response` (await a network response) · `mock_route` (stub responses for deterministic captures)
 
-**Auth** — `authenticate_login` · `submit_2fa_code` · `enroll_credentials` · `manage_vault` · `await_human_interaction`
+**Human handoff** — `await_human_interaction`
 
 **Session & tabs** — `manage_session` (cookies / localStorage / headers / storageState) · `manage_tabs`
 
@@ -201,15 +200,9 @@ Every other tool operates on the **active** tab. Calls are still serialized; mul
 
 ---
 
-## Auth & security model
+## Human handoff & security model
 
-agent-eyes reaches authenticated pages **without the AI ever seeing your credentials.**
-
-- **AI-blind login.** `authenticate_login` opens a localhost page where *you* type the username and password into a real masked field. The server fills them into the site and returns only a status (`success` / `otp_required` / `error` / …). The values never enter a tool argument, a tool result, or a log — and auth tools **never return a screenshot**, since a 2FA page can render the code in plaintext.
-- **2FA.** `submit_2fa_code` works the same way; you type the current code, the AI never learns it.
-- **Encrypted vault.** `enroll_credentials` stores a profile's credentials (and optional TOTP seed) in an **AES-256-GCM** vault with an `scrypt` KDF, under a master passphrase held only in memory. There is **no plaintext-vault mode**. `vault.json` and `sessions/` are auto-gitignored; `manage_vault` handles status, reset, and passphrase changes.
-- **SSO.** `authenticate_login` with `sso: "google"` reuses an existing provider session — log in once, reuse everywhere.
-- **Human handoff.** When a page needs a real human — Cloudflare Turnstile, a CAPTCHA, an interstitial — `await_human_interaction` gives you a window (relaunching the invisible Chrome visibly, same profile and logins, tabs reopened on their URLs) and blocks until you click **Done** or the page reaches an expected URL. **agent-eyes never solves the challenge and never bypasses anti-bot protection — it hands off to you, and your own click is what validates.** That's the whole reason it runs a real, clean browser.
+agent-eyes does **not** log in for you and holds no credentials. Sign in by hand once — when a page needs a real human (a login, Cloudflare Turnstile, a CAPTCHA, an interstitial), `await_human_interaction` gives you a window (relaunching the invisible Chrome visibly, same profile, tabs reopened on their URLs) and blocks until you click **Done** or the page reaches an expected URL. The session then persists in the Chrome profile, so the agent reuses it. **agent-eyes never solves the challenge and never bypasses anti-bot protection — it hands off to you, and your own click is what validates.**
 
 Full details, including what agent-eyes touches on your machine: [SECURITY.md](SECURITY.md).
 
@@ -223,7 +216,7 @@ Setup writes `.agent-eyes/settings.json`. It holds no secrets, so it's safe to c
 |-----|------|---------|-------------|
 | `browser.mode` | `"managed" \| "headless" \| "headed" \| "cdp"` | `"managed"` | How the browser is obtained — see below. |
 | `browser.chromePath` | string | `"auto"` | `"auto"` detects a real Chrome; or give an absolute path. |
-| `browser.profileDir` | string \| null | `null` | Persistent Chrome profile for managed mode. `null` → `~/.agent-eyes/chrome-profile`. Logins live here. |
+| `browser.profileDir` | string \| null | `null` | Persistent Chrome profile for managed mode. `null` → `~/.agent-eyes/chrome-profile`. Anything you sign into lives here. |
 | `browser.cdpUrl` | string \| null | `null` | DevTools endpoint for `mode: "cdp"` (e.g. `http://localhost:9222`). |
 | `browser.keepAlive` | boolean | `true` | Leave the managed Chrome running between sessions for an instant warm reconnect. |
 | `browser.headless` | boolean | `true` | **Managed mode only:** run Chrome with **no visible window** (`--headless=new`), keeping the real-Chrome fingerprint and your logged-in profile. A handoff relaunches the same profile *with* a window and reopens your tabs, so only unsaved in-page state is lost. Set `false` to see the window from the first capture. |
@@ -247,7 +240,7 @@ agent-eyes always works in its **own dedicated tab** and never touches your othe
 
 ## Where things are saved
 
-Every screenshot-producing tool writes its full-resolution render to `.agent-eyes/captures/run-<n>-<page>/` and reports the path, while only a small WebP thumbnail goes on the wire. An auto-generated `.agent-eyes/.gitignore` keeps `captures/`, `gallery.html`, `sessions/`, and `vault.json` out of git — baselines stay committable, so visual checkpoints can be shared with your team, and so does `settings.json`.
+Every screenshot-producing tool writes its full-resolution render to `.agent-eyes/captures/run-<n>-<page>/` and reports the path, while only a small WebP thumbnail goes on the wire. An auto-generated `.agent-eyes/.gitignore` keeps `captures/`, `gallery.html`, and `sessions/` out of git — baselines stay committable, so visual checkpoints can be shared with your team, and so does `settings.json`.
 
 Every response ends with a page-health block (console errors, failed requests, 4xx/5xx, blank-page detection) and a `[Metadata: agent-eyes vX.Y.Z]` tag. Logs go to **stderr** only; stdout is reserved for the MCP protocol.
 
@@ -275,7 +268,7 @@ git clone https://github.com/oljodev/mcp-agent-eyes.git
 cd mcp-agent-eyes
 npm install
 npm run build      # tsc → dist/
-npm test           # config, Chrome detection, login classifier, vault crypto, verify asserts
+npm test           # config, Chrome detection, verify asserts
 ```
 
 The unit suite never launches a browser, so it runs anywhere. Point your agent at `node /abs/path/to/dist/index.js` to drive your working copy. Code layout, conventions, and PR expectations live in [CONTRIBUTING.md](CONTRIBUTING.md).
@@ -283,7 +276,7 @@ The unit suite never launches a browser, so it runs anywhere. Point your agent a
 ## Support
 
 - **Bugs and ideas:** [open an issue](https://github.com/oljodev/mcp-agent-eyes/issues) — include your agent, your OS, and the `[Metadata: agent-eyes vX.Y.Z]` line from a tool response.
-- **Security:** report privately — see [SECURITY.md](SECURITY.md). agent-eyes handles credentials and runs a real browser, so please don't file those in public issues.
+- **Security:** report privately — see [SECURITY.md](SECURITY.md). agent-eyes runs a real browser with your profile, so please don't file those in public issues.
 - **What changed:** [CHANGELOG.md](CHANGELOG.md).
 
 ## License

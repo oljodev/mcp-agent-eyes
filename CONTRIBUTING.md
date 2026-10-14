@@ -37,7 +37,7 @@ src/
   browser/          the stateful session: core, acquire, managed Chrome, navigation…
   ops/              one file per tool operation, called by the registrations
   tools/register/   MCP tool definitions (schema + description + formatting)
-  auth/             secure prompt, vault crypto, TOTP, redaction
+  human/            loopback handoff prompt for await_human_interaction
   types/            shared types, zod fields, timeouts, viewports
 test/               node:test unit suites (*.test.mjs, run against dist/)
 ```

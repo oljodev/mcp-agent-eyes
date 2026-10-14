@@ -39,17 +39,6 @@ export const SCROLL_RESET_SETTLE_MS = 100;
 /** Pause between steps of run_interaction_sequence, for layout reflows. */
 export const SEQUENCE_STEP_PAUSE_MS = 150;
 
-/**
- * After a login/2FA submit, a SPA often runs an async auth request and only
- * THEN tears down the form / client-side redirects. We re-classify the page
- * until the verdict is decisive or this grace period elapses, so a real
- * success isn't misread as "unknown" just because we looked mid-redirect.
- */
-export const LOGIN_SETTLE_TIMEOUT_MS = 6_000;
-
-/** Poll interval while waiting for the post-submit login state to settle. */
-export const LOGIN_POLL_INTERVAL_MS = 200;
-
 /** Upper bound on steps per run_interaction_sequence call. */
 export const MAX_SEQUENCE_STEPS = 25;
 

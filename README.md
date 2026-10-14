@@ -117,7 +117,7 @@ Four breakpoints are shared by every tool that takes one: `mobile` (393×852), `
 `capture_page_screenshot` (one breakpoint, with token-cost controls) · `matrix_responsive_audit` (all four in one call) · `capture_element` (cropped single element) · `generate_audit_gallery` (HTML contact sheet of a run)
 
 **Layout & measurement**
-`detect_layout_matrix` (zero-image DOM diagnostics across breakpoints, plus annotated renders) · `find_breakpoints` (where layout actually changes) · `measure_element` (tokenless inspector: dimensions, spacing, color, contrast) · `measure_layout_shift` (CLS) · `visual_diff_regions` (region-level pixel diff) · `compare_to_baseline` (save and diff visual baselines)
+`audit` (**start here**: CLS + layout at all breakpoints + accessibility + design smells in one zero-image report with a PASS/FAIL verdict) · `detect_layout_matrix` (zero-image DOM diagnostics across breakpoints, plus annotated renders) · `find_breakpoints` (where layout actually changes) · `measure_element` (tokenless inspector: dimensions, spacing, color, contrast) · `measure_layout_shift` (CLS) · `visual_diff_regions` (region-level pixel diff) · `compare_to_baseline` (save and diff visual baselines)
 
 **Accessibility**
 `scan_accessibility` — WCAG foundations: alt text, heading order, accessible names

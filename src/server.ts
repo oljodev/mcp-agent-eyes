@@ -27,6 +27,7 @@ import { registerGalleryTool } from "./tools/register/gallery.js";
 import { registerHumanInteractionTool } from "./tools/register/human.js";
 import { registerManageTabsTool } from "./tools/register/tabs.js";
 import { registerVerifyTool } from "./tools/register/verify.js";
+import { registerAuditTool } from "./tools/register/audit.js";
 
 export function buildServer(): McpServer {
   const server = new McpServer({
@@ -52,6 +53,7 @@ export function buildServer(): McpServer {
   registerHumanInteractionTool(server);
   registerManageTabsTool(server);
   registerVerifyTool(server);
+  registerAuditTool(server);
   registerScriptTool(server); // opt-in via AGENT_EYES_ALLOW_EVAL=1
   registerNetworkTools(server);
   registerGalleryTool(server);

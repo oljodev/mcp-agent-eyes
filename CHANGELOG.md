@@ -9,6 +9,14 @@ decision, not an automatic consequence of a change.
 
 ## [Unreleased]
 
+### Added
+
+- **`audit`** — one zero-image call that runs the cold-load CLS pass, layout
+  diagnostics at all four breakpoints, the accessibility scan and the design
+  review, and returns a summary table with a PASS/FAIL verdict followed by
+  per-section findings. `summaryOnly` keeps it to the table; `maxIssues` turns
+  it into an assertion. A pass that cannot run is reported, not fatal.
+
 ### Removed
 
 - **All credential handling.** `authenticate_login`, `submit_2fa_code`,

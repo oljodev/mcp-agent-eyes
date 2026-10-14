@@ -19,7 +19,10 @@ import { SERVER_VERSION } from "./version.js";
 
 const REPO = "oljodev/mcp-agent-eyes";
 const SPEC = `github:${REPO}`;
-const LATEST_URL = `https://raw.githubusercontent.com/${REPO}/main/package.json`;
+// The API is read live; raw.githubusercontent.com is CDN-cached for ~5 minutes,
+// so it is only the fallback (the API is rate-limited for anonymous callers).
+const LATEST_API = `https://api.github.com/repos/${REPO}/contents/package.json?ref=main`;
+const LATEST_RAW = `https://raw.githubusercontent.com/${REPO}/main/package.json`;
 
 /** The single command a human or agent runs to update, whatever the install. */
 export const UPDATE_COMMAND = `npx -y ${SPEC} update`;
@@ -97,14 +100,24 @@ function packageRoot(): string {
 }
 
 async function fetchLatestVersion(): Promise<string | null> {
-  try {
-    const res = await fetch(LATEST_URL, { signal: AbortSignal.timeout(8_000) });
-    if (!res.ok) return null;
-    const json = (await res.json()) as { version?: unknown };
-    return typeof json.version === "string" ? json.version : null;
-  } catch {
-    return null;
+  const attempts: Array<[string, Record<string, string>]> = [
+    [LATEST_API, { accept: "application/vnd.github.raw" }],
+    [LATEST_RAW, {}],
+  ];
+  for (const [url, headers] of attempts) {
+    try {
+      const res = await fetch(url, {
+        headers,
+        signal: AbortSignal.timeout(8_000),
+      });
+      if (!res.ok) continue;
+      const json = (await res.json()) as { version?: unknown };
+      if (typeof json.version === "string") return json.version;
+    } catch {
+      // try the next source
+    }
   }
+  return null;
 }
 
 function run(cmd: string, args: string[], cwd?: string): boolean {

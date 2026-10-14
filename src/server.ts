@@ -7,6 +7,8 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
+import { updateHint, updateInstructions } from "./update.js";
+
 import { SERVER_NAME, SERVER_VERSION } from "./version.js";
 import { registerCaptureTools } from "./tools/register/capture.js";
 import { registerCaptureElementTool } from "./tools/register/capture-element.js";
@@ -30,10 +32,24 @@ import { registerVerifyTool } from "./tools/register/verify.js";
 import { registerAuditTool } from "./tools/register/audit.js";
 
 export function buildServer(): McpServer {
-  const server = new McpServer({
-    name: SERVER_NAME,
-    version: SERVER_VERSION,
-  });
+  const server = new McpServer(
+    { name: SERVER_NAME, version: SERVER_VERSION },
+    { instructions: updateHint() },
+  );
+
+  // Costs nothing in the tool list; an agent reads it only when it needs it.
+  server.registerResource(
+    "update-instructions",
+    "agent-eyes://update",
+    {
+      title: "How to update agent-eyes",
+      description: "The one command that updates agent-eyes, and how to check the version.",
+      mimeType: "text/markdown",
+    },
+    (uri) => ({
+      contents: [{ uri: uri.href, mimeType: "text/markdown", text: updateInstructions() }],
+    }),
+  );
 
   strictInputSchemas(server);
 

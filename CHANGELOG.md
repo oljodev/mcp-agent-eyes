@@ -34,6 +34,8 @@ decision, not an automatic consequence of a change.
   follow the heading tag actually seen (an `h3` is no longer labelled `h1`),
   generic font families are not quoted in CSS output, and unclassified page
   sections show their tag/id/class instead of a bare "generic".
+- Tool arguments are validated strictly: an unknown or misplaced argument is a
+  clear error instead of being silently dropped.
 
 ## [0.29.0] — 2026-09-18
 

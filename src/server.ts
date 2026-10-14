@@ -5,6 +5,7 @@
  */
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { z } from "zod";
 
 import { SERVER_NAME, SERVER_VERSION } from "./version.js";
 import { registerCaptureTools } from "./tools/register/capture.js";
@@ -33,6 +34,8 @@ export function buildServer(): McpServer {
     version: SERVER_VERSION,
   });
 
+  strictInputSchemas(server);
+
   registerCaptureTools(server);
   registerCaptureElementTool(server);
   registerLabelInteractivesTool(server);
@@ -54,4 +57,37 @@ export function buildServer(): McpServer {
   registerGalleryTool(server);
 
   return server;
+}
+
+/**
+ * Reject unknown arguments. The SDK builds each tool's input object from a raw
+ * shape, which silently strips unknown keys — so a misspelled or misplaced
+ * argument (say `url` on a tool that has none) was ignored and the call ran
+ * with defaults. Strict objects turn that into a clear validation error.
+ */
+function strictInputSchemas(server: McpServer): void {
+  const register = server.registerTool.bind(server) as (
+    name: string,
+    config: { inputSchema?: unknown },
+    handler: unknown,
+  ) => unknown;
+  (server as { registerTool: unknown }).registerTool = (
+    name: string,
+    config: { inputSchema?: unknown },
+    handler: unknown,
+  ) => {
+    const shape = config.inputSchema;
+    const isRawShape =
+      typeof shape === "object" &&
+      shape !== null &&
+      !("_def" in shape) &&
+      !("_zod" in shape);
+    return register(
+      name,
+      isRawShape
+        ? { ...config, inputSchema: z.object(shape as z.ZodRawShape).strict() }
+        : config,
+      handler,
+    );
+  };
 }

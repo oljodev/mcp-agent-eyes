@@ -66,6 +66,15 @@ export class HealthMonitor {
     });
   }
 
+  /** Drop buffered telemetry (a failed op reports its error, not its health). */
+  discard(): void {
+    this.consoleErrors.length = 0;
+    this.pageErrors.length = 0;
+    this.failedRequests.length = 0;
+    this.httpErrors.length = 0;
+    this.dropped = 0;
+  }
+
   /**
    * Snapshot-and-clear the health buffers, plus a DOM sanity check. The caller
    * runs this inside the same exclusive queue slot as the operation it

@@ -23,6 +23,11 @@ decision, not an automatic consequence of a change.
   local DevTools port) no longer outlives the server. Set it to `true` to keep
   the old instant warm reconnect; sign-ins persist in the profile either way.
 
+### Fixed
+
+- A failed tool call no longer leaks its page-health entries (e.g. a refused
+  navigation) into the next, unrelated response.
+
 ## [0.29.0] — 2026-09-18
 
 ### Changed

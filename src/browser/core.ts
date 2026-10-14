@@ -200,7 +200,15 @@ export class BrowserCore {
   runExclusive<T>(fn: () => Promise<T>): Promise<T> {
     const wrapped = async (): Promise<T> => {
       this.assertOpen();
-      return fn();
+      try {
+        return await fn();
+      } catch (error) {
+        // The error response carries no health block, so anything buffered
+        // (e.g. the failed navigation's request) would otherwise surface on
+        // the NEXT, unrelated call.
+        this.health.discard();
+        throw error;
+      }
     };
     const run = this.queue.then(wrapped, wrapped);
     // Keep the chain alive even when fn rejects; the caller still sees the

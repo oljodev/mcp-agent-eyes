@@ -72,6 +72,7 @@ import { session } from "./browser/session.js";
 import { ensureSettingsFile } from "./config.js";
 import { buildServer } from "./server.js";
 import { runSetup } from "./setup.js";
+import { runUpdate, runVersion } from "./update.js";
 import { SERVER_NAME, SERVER_VERSION } from "./version.js";
 
 let shuttingDown = false;
@@ -90,6 +91,14 @@ async function main(): Promise<void> {
   // `mcp-agent-eyes setup` runs the onboarding CLI instead of the stdio server.
   if (process.argv[2] === "setup") {
     await runSetup(process.argv.slice(3));
+    process.exit(0);
+  }
+
+  if (process.argv[2] === "update") {
+    process.exit(await runUpdate(process.argv.slice(3)));
+  }
+  if (process.argv[2] === "version" || process.argv[2] === "--version") {
+    runVersion();
     process.exit(0);
   }
 

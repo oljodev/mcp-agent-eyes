@@ -26,6 +26,9 @@ the code:
   care about.
 - **A loopback prompt on localhost.** Human handoffs open a short-lived page
   bound to `127.0.0.1` with Done / Cancel buttons. It carries no secrets.
+- **No network allow-list.** The agent can point the browser at any http(s)
+  URL it can reach, including private ranges and cloud-metadata addresses
+  (`169.254.169.254`). Run it where that is acceptable.
 - **Screenshots on disk.** Full-resolution captures are saved under
   `.agent-eyes/captures/`, which is auto-gitignored. They can contain whatever
   was on screen, including authenticated pages.

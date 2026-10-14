@@ -40,6 +40,8 @@ decision, not an automatic consequence of a change.
 - Tap-target findings label a button or link by its text rather than its id.
 - `manage_tabs close` names the tab it closed; `set_baseline` says when it
   replaced an existing baseline.
+- `npm audit` is clean (`@modelcontextprotocol/sdk` and its `proxy-addr`
+  dependency updated within their ranges).
 
 ## [0.29.0] — 2026-09-18
 

@@ -29,6 +29,7 @@ decision, not an automatic consequence of a change.
   navigation) into the next, unrelated response.
 - The first navigation after a failed one no longer errors with "interrupted by
   another navigation to about:blank".
+- `/favicon.ico` 404s no longer appear in page health.
 
 ## [0.29.0] — 2026-09-18
 

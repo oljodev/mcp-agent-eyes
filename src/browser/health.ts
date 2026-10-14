@@ -11,6 +11,15 @@ import { MAX_HEALTH_ENTRIES, type PageHealth } from "../types/health.js";
 import { domSanityCheck } from "../inpage/dom-sanity.js";
 import { trimUrl } from "./errors.js";
 
+function isFaviconUrl(url: string | undefined): boolean {
+  if (!url) return false;
+  try {
+    return new URL(url).pathname === "/favicon.ico";
+  } catch {
+    return false;
+  }
+}
+
 export class HealthMonitor {
   private consoleErrors: string[] = [];
   private pageErrors: string[] = [];
@@ -33,6 +42,11 @@ export class HealthMonitor {
         return;
       }
       const location = message.location();
+      // Browsers request /favicon.ico on their own; a 404 there is noise the
+      // agent would otherwise chase on every first load.
+      if (isFaviconUrl(location.url)) {
+        return;
+      }
       const where = location.url
         ? ` (${trimUrl(location.url)}:${location.lineNumber})`
         : "";
@@ -57,7 +71,7 @@ export class HealthMonitor {
     });
 
     page.on("response", (response) => {
-      if (response.status() >= 400) {
+      if (response.status() >= 400 && !isFaviconUrl(response.url())) {
         this.push(
           this.httpErrors,
           `${response.status()} ${response.request().method()} ${trimUrl(response.url())}`,

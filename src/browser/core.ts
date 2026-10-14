@@ -271,8 +271,9 @@ export class BrowserCore {
         await browser.close().catch(() => undefined);
       }
       if (mode === "managed") {
-        // Default keepalive leaves our Chrome running for an instant warm
-        // reconnect next session; keepalive=false fully closes it.
+        // Default (keepalive=false) closes the Chrome we manage so nothing
+        // lingers after the agent exits; keepalive=true leaves it running for
+        // an instant warm reconnect next session.
         await this.managed.shutdown(this.resolveConfig()).catch(() => undefined);
       }
       return;

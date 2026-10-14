@@ -17,6 +17,12 @@ decision, not an automatic consequence of a change.
   through `await_human_interaction`; the session persists in the Chrome profile.
   `await_human_interaction` and `manage_session` are unchanged.
 
+### Changed
+
+- **`browser.keepAlive` now defaults to `false`.** The managed Chrome (and its
+  local DevTools port) no longer outlives the server. Set it to `true` to keep
+  the old instant warm reconnect; sign-ins persist in the profile either way.
+
 ## [0.29.0] — 2026-09-18
 
 ### Changed

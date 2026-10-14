@@ -218,7 +218,7 @@ Setup writes `.agent-eyes/settings.json`. It holds no secrets, so it's safe to c
 | `browser.chromePath` | string | `"auto"` | `"auto"` detects a real Chrome; or give an absolute path. |
 | `browser.profileDir` | string \| null | `null` | Persistent Chrome profile for managed mode. `null` → `~/.agent-eyes/chrome-profile`. Anything you sign into lives here. |
 | `browser.cdpUrl` | string \| null | `null` | DevTools endpoint for `mode: "cdp"` (e.g. `http://localhost:9222`). |
-| `browser.keepAlive` | boolean | `true` | Leave the managed Chrome running between sessions for an instant warm reconnect. |
+| `browser.keepAlive` | boolean | `false` | Leave the managed Chrome running after the server exits for an instant warm reconnect. Off by default so no Chrome (or its local DevTools port) lingers; sign-ins persist in the profile either way. |
 | `browser.headless` | boolean | `true` | **Managed mode only:** run Chrome with **no visible window** (`--headless=new`), keeping the real-Chrome fingerprint and your logged-in profile. A handoff relaunches the same profile *with* a window and reopens your tabs, so only unsaved in-page state is lost. Set `false` to see the window from the first capture. |
 | `browser.visibility` | `"on-demand" \| "always"` | `"on-demand"` | `on-demand`: never steal focus — only `await_human_interaction` puts a window on screen. `always`: keep a visible window foregrounded (implies `headless: false`). |
 | `browser.extraFlags` | string[] | `[]` | Extra Chrome flags, e.g. `["--no-sandbox"]` in containers. |

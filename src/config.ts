@@ -79,7 +79,7 @@ const BrowserFileSchema = z
     chromePath: z.string().default("auto"),
     profileDir: z.string().nullable().default(null),
     cdpUrl: z.string().nullable().default(null),
-    keepAlive: z.boolean().default(true),
+    keepAlive: z.boolean().default(false),
     headless: z.boolean().default(true),
     visibility: z.enum(["on-demand", "always"]).default("on-demand"),
     extraFlags: z.array(z.string()).default([]),

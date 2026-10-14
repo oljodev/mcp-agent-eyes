@@ -32,7 +32,7 @@ test("no file → defaults; default mode is managed", () => {
   assert.equal(s.browser.mode, "managed");
   assert.equal(s.browser.chromePath, null);
   assert.equal(s.browser.visibility, "on-demand");
-  assert.equal(s.browser.keepalive, true);
+  assert.equal(s.browser.keepalive, false);
   assert.equal(s.browser.headless, true);
   assert.equal(s.tabs.maxOpen, 8);
   assert.equal(s.captures.thumbnailMaxWidth, 1024);

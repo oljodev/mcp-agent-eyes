@@ -30,6 +30,10 @@ decision, not an automatic consequence of a change.
 - The first navigation after a failed one no longer errors with "interrupted by
   another navigation to about:blank".
 - `/favicon.ico` 404s no longer appear in page health.
+- Design tokens: the page background comes from `body`/`html`, type-ramp roles
+  follow the heading tag actually seen (an `h3` is no longer labelled `h1`),
+  generic font families are not quoted in CSS output, and unclassified page
+  sections show their tag/id/class instead of a bare "generic".
 
 ## [0.29.0] — 2026-09-18
 

@@ -77,6 +77,8 @@ export interface SectionInfo {
   itemCount: number;
   /** Short functional heading label (≤60 chars) — a structural hint, not body copy. */
   heading?: string | undefined;
+  /** Tag/id/class hint for bands that match no known pattern (type "generic"). */
+  label?: string | undefined;
   /** Short CTA label (≤30 chars) if the band has a primary button. */
   cta?: string | undefined;
 }

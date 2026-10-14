@@ -112,6 +112,7 @@ export function extractStyleInPage(limits: { maxElements: number }): StyleTokens
   };
 
   type Sample = {
+    tag: string;
     weight: number;
     lineHeight: number;
     letterSpacing: string;
@@ -252,6 +253,7 @@ export function extractStyleInPage(limits: { maxElements: number }): StyleTokens
       const ratio =
         !Number.isNaN(lh) && fsPx > 0 ? Math.round((lh / fsPx) * 100) / 100 : 1.5;
       const sample: Sample = {
+        tag,
         weight: fw,
         lineHeight: ratio,
         letterSpacing: cs.letterSpacing,
@@ -288,15 +290,20 @@ export function extractStyleInPage(limits: { maxElements: number }): StyleTokens
   if (bodySize === null && typeScale.length) bodySize = typeScale[0] ?? null;
 
   // type ramp: largest heading sizes (display/h1/h2/h3) + body
-  const roleNames = ["display", "h1", "h2", "h3"];
+  const roleNames = ["display", "heading-2", "heading-3", "heading-4"];
   const ramp: TypeRampEntry[] = [];
   [...headingSamples.keys()]
     .sort((a, b) => b - a)
     .slice(0, 4)
     .forEach((px, i) => {
       const s = headingSamples.get(px)!;
+      // Name the step after the heading tag actually seen at that size; the
+      // biggest step is the "display" size. Rank alone mislabels an h3 as h1.
+      const tagRole = /^h[1-6]$/.test(s.tag) ? s.tag : null;
+      const rankRole = roleNames[i] ?? `h${i + 1}`;
+      const role = i === 0 && px >= 40 ? "display" : (tagRole ?? rankRole);
       ramp.push({
-        role: roleNames[i] ?? `h${i + 1}`,
+        role: ramp.some((r) => r.role === role) ? `${role}-${px}` : role,
         px,
         weight: s.weight,
         lineHeight: s.lineHeight,
@@ -314,6 +321,17 @@ export function extractStyleInPage(limits: { maxElements: number }): StyleTokens
       letterSpacing: bs?.letterSpacing ?? "normal",
       transform: bs?.transform ?? "none",
     });
+  }
+
+  // The page background is what body/html actually paint, not whichever
+  // colour covers the most element-area.
+  let pageBg = "rgb(255, 255, 255)";
+  for (const el of [document.body, document.documentElement]) {
+    const c = el ? canon(getComputedStyle(el).backgroundColor) : null;
+    if (c) {
+      pageBg = c;
+      break;
+    }
   }
 
   const fontBody = byDesc(bodyFam)[0] ?? byDesc(headingFam)[0] ?? null;
@@ -439,6 +457,12 @@ export function extractStyleInPage(limits: { maxElements: number }): StyleTokens
     else if (heading && cta) type = "cta-band";
 
     const out: SectionInfo = { type, columns: grp.columns, itemCount: grp.count };
+    if (type === "generic") {
+      const cls = (el.getAttribute("class") ?? "").trim().split(/\s+/)[0];
+      out.label =
+        el.tagName.toLowerCase() +
+        (el.id ? `#${el.id}` : cls ? `.${cls}` : "");
+    }
     if (heading) out.heading = heading;
     if (cta) out.cta = cta;
     return out;
@@ -459,7 +483,7 @@ export function extractStyleInPage(limits: { maxElements: number }): StyleTokens
   if (footer) sections.push(classify(footer, "footer"));
 
   return {
-    background: byDesc(bgArea).slice(0, 4),
+    background: [pageBg, ...byDesc(bgArea).filter((c) => c !== pageBg)].slice(0, 4),
     text: byDesc(textUse).slice(0, 5),
     border: byDesc(borderUse)[0] ?? null,
     accent,

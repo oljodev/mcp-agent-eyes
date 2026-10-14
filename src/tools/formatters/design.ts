@@ -135,7 +135,7 @@ export function formatStyleTokens(
       const meta =
         s.itemCount > 0 ? ` ×${s.itemCount}${s.columns > 1 ? ` (${s.columns} col)` : ""}` : "";
       const head = s.heading ? ` — "${s.heading}"` : "";
-      lines.push(`  ${i + 1}. ${s.type}${meta}${head}`);
+      lines.push(`  ${i + 1}. ${s.type}${s.label ? ` <${s.label}>` : ""}${meta}${head}`);
     });
   }
 
@@ -149,7 +149,7 @@ export function formatStyleTokens(
   if (tokens.accentGradient) css.push(`  --accent: ${tokens.accentGradient};`);
   else if (accentHex) css.push(`  --accent: ${accentHex.split(" ")[0]};`);
   if (tokens.fontDisplay) css.push(`  --font-display: "${tokens.fontDisplay}";`);
-  if (tokens.fontPrimary) css.push(`  --font-body: "${tokens.fontPrimary}";`);
+  if (tokens.fontPrimary) css.push(`  --font-body: ${cssFamily(tokens.fontPrimary)};`);
   if (tokens.fontMono) css.push(`  --font-mono: "${tokens.fontMono}";`);
   if (tokens.bodySize) css.push(`  --text-base: ${tokens.bodySize}px;`);
   const baseRadius = tokens.radii.find((r) => r > 0 && r < 9999);
@@ -162,7 +162,7 @@ export function formatStyleTokens(
   const tw: string[] = ["", "TAILWIND theme.extend:", "{"];
   tw.push("  fontFamily: {");
   if (tokens.fontDisplay) tw.push(`    display: ["${tokens.fontDisplay}", "serif"],`);
-  if (tokens.fontPrimary) tw.push(`    sans: ["${tokens.fontPrimary}", "system-ui", "sans-serif"],`);
+  if (tokens.fontPrimary) tw.push(`    sans: [${JSON.stringify(tokens.fontPrimary)}, "system-ui", "sans-serif"],`);
   if (tokens.fontMono) tw.push(`    mono: ["${tokens.fontMono}", "monospace"],`);
   tw.push("  },");
   tw.push("  colors: {");
@@ -199,7 +199,7 @@ export function formatSiteDesign(
         s.itemCount > 0
           ? ` ×${s.itemCount}${s.columns > 1 ? ` (${s.columns} col)` : ""}`
           : "";
-      lines.push(`      · ${s.type}${meta}${s.heading ? ` — "${s.heading}"` : ""}`);
+      lines.push(`      · ${s.type}${s.label ? ` <${s.label}>` : ""}${meta}${s.heading ? ` — "${s.heading}"` : ""}`);
     }
   }
 
@@ -216,4 +216,14 @@ export function formatSiteDesign(
       "with the client's own content — never the reference site's.",
   );
   return lines.join("\n");
+}
+
+const GENERIC_FAMILIES = new Set([
+  "serif", "sans-serif", "monospace", "cursive", "fantasy", "system-ui",
+  "ui-serif", "ui-sans-serif", "ui-monospace", "ui-rounded", "math", "emoji",
+]);
+
+/** A CSS font-family value: generic keywords stay bare, real names get quoted. */
+function cssFamily(name: string): string {
+  return GENERIC_FAMILIES.has(name.toLowerCase()) ? name : `"${name}"`;
 }

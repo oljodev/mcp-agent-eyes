@@ -36,6 +36,10 @@ decision, not an automatic consequence of a change.
   sections show their tag/id/class instead of a bare "generic".
 - Tool arguments are validated strictly: an unknown or misplaced argument is a
   clear error instead of being silently dropped.
+- Interactions on a selector that matches nothing fail after 3 s, not 10 s.
+- Tap-target findings label a button or link by its text rather than its id.
+- `manage_tabs close` names the tab it closed; `set_baseline` says when it
+  replaced an existing baseline.
 
 ## [0.29.0] — 2026-09-18
 

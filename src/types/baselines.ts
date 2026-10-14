@@ -22,6 +22,8 @@ export interface BaselineSetResult {
   file: string;
   /** True when this baseline captures the entire scrollable height. */
   fullPage: boolean;
+  /** True when an existing baseline of the same (sanitized) name was overwritten. */
+  replaced: boolean;
   width: number;
   height: number;
   bytes: number;

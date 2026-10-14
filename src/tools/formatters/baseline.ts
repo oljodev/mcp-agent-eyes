@@ -14,7 +14,7 @@ export function formatBaselineResult(
       content: [
         textBlock(
           `${result.fullPage ? "Full-page baseline" : "Baseline"} "${name}" ` +
-            `saved to ${result.file} ` +
+            `${result.replaced ? "replaced the existing baseline at" : "saved to"} ${result.file} ` +
             `(${result.width}x${result.height}px, ${kb(result.bytes)}). ` +
             'Compare future renders against it with action "diff_against_baseline"' +
             `${result.fullPage ? " and fullPage: true" : ""}.`,

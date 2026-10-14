@@ -165,6 +165,13 @@ export function scanLayoutInPage({
     if (testId && testId.trim()) {
       return testId.trim().slice(0, 30);
     }
+    // A control's visible text says more than its id ("Sign in" vs "b1").
+    if (/^(BUTTON|A|SUMMARY)$/.test(el.tagName)) {
+      const text = (el.textContent ?? "").trim().replace(/\s+/g, " ");
+      if (text) {
+        return text.slice(0, 30);
+      }
+    }
     if (el.id) {
       return el.id.slice(0, 30);
     }

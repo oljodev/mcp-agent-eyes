@@ -1,6 +1,6 @@
 /** compare_to_baseline operation (save / diff) + its filesystem helpers. */
 
-import { mkdir, readFile, readdir, rename, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, rename, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import pixelmatch from "pixelmatch";
@@ -65,6 +65,10 @@ export function baseline(
 
     if (action === "set_baseline") {
       // Write-then-rename so a crash mid-write never corrupts a baseline.
+      const replaced = await stat(file).then(
+        () => true,
+        () => false,
+      );
       const tmp = `${file}.tmp-${process.pid}`;
       await writeFile(tmp, current);
       await rename(tmp, file);
@@ -74,6 +78,7 @@ export function baseline(
           action,
           file,
           fullPage,
+          replaced,
           width: dims.width,
           height: dims.height,
           bytes: current.length,

@@ -6,6 +6,9 @@ export const NAVIGATION_TIMEOUT_MS = 30_000;
 /** Maximum time to wait for an element to become actionable. */
 export const ACTION_TIMEOUT_MS = 10_000;
 
+/** How long an interaction waits for its selector to exist at all. */
+export const ATTACH_GRACE_MS = 3_000;
+
 /** Default ceiling for a wait_for_* / expect_* step before it gives up. */
 export const WAIT_TIMEOUT_MS = 5_000;
 

@@ -4,10 +4,14 @@
  * interact_and_audit, run_interaction_sequence, and wait_for_response.
  */
 
-import type { Page } from "playwright-core";
+import type { Locator, Page } from "playwright-core";
 
 import type { SequenceAction, StepParams } from "../types/interactions.js";
-import { ACTION_TIMEOUT_MS, WAIT_TIMEOUT_MS } from "../types/timeouts.js";
+import {
+  ACTION_TIMEOUT_MS,
+  ATTACH_GRACE_MS,
+  WAIT_TIMEOUT_MS,
+} from "../types/timeouts.js";
 import {
   BrowserToolError,
   formatInteractionError,
@@ -27,6 +31,24 @@ export type ActionOutcome =
   | { scriptValue: string; label: string | undefined }
   | null;
 
+/**
+ * Fail fast when nothing matches. Playwright's actionability wait would spend
+ * the whole ACTION_TIMEOUT_MS on a selector that simply does not exist; a short
+ * attach grace covers elements that render a beat late, and anything present
+ * still gets the full actionability timeout afterwards.
+ */
+async function requireAttached(locator: Locator, selector: string): Promise<void> {
+  try {
+    await locator.waitFor({ state: "attached", timeout: ATTACH_GRACE_MS });
+  } catch {
+    throw new BrowserToolError(
+      `Interaction failed: no element matches selector "${selector}" ` +
+        `(waited ${ATTACH_GRACE_MS / 1000}s). Check it against the most ` +
+        "recent screenshot or label_interactives legend.",
+    );
+  }
+}
+
 async function actOnLocator(
   page: Page,
   kind: "click" | "hover",
@@ -34,12 +56,14 @@ async function actOnLocator(
 ): Promise<void> {
   try {
     const locator = page.locator(selector).first();
+    await requireAttached(locator, selector);
     if (kind === "click") {
       await locator.click({ timeout: ACTION_TIMEOUT_MS });
     } else {
       await locator.hover({ timeout: ACTION_TIMEOUT_MS });
     }
   } catch (error) {
+    if (error instanceof BrowserToolError) throw error;
     throw new BrowserToolError(formatInteractionError(error, kind, selector));
   }
 }
@@ -57,11 +81,11 @@ async function typeInto(
   try {
     // fill() clears the field and sets the value — far more reliable for
     // agents than emulating individual keystrokes into a stale value.
-    await page
-      .locator(selector)
-      .first()
-      .fill(text, { timeout: ACTION_TIMEOUT_MS });
+    const locator = page.locator(selector).first();
+    await requireAttached(locator, selector);
+    await locator.fill(text, { timeout: ACTION_TIMEOUT_MS });
   } catch (error) {
+    if (error instanceof BrowserToolError) throw error;
     throw new BrowserToolError(formatInteractionError(error, "type", selector));
   }
 }

@@ -40,7 +40,7 @@ export function manageTabs(
       action: input.action,
       activeLabel: core.activeLabelName(),
       tabs,
-      summary: summarize(input.action, core.activeLabelName(), tabs),
+      summary: summarize(input.action, core.activeLabelName(), tabs, input.label),
       health: await core.drainHealth(),
     };
   });
@@ -53,14 +53,19 @@ function requireLabel(input: ManageTabsInput, action: TabAction): string {
   return input.label;
 }
 
-function summarize(action: TabAction, activeLabel: string, tabs: ManageTabsResult["tabs"]): string {
+function summarize(
+  action: TabAction,
+  activeLabel: string,
+  tabs: ManageTabsResult["tabs"],
+  closedLabel?: string,
+): string {
   const head =
     action === "open"
       ? `Opened tab "${activeLabel}" (now active)`
       : action === "switch"
         ? `Switched to tab "${activeLabel}"`
         : action === "close"
-          ? `Closed a tab; active is now "${activeLabel}"`
+          ? `Closed tab "${closedLabel ?? "?"}"; active is now "${activeLabel}"`
           : `${tabs.length} tab(s) open`;
   const list = tabs
     .map((t) => `  ${t.active ? "▶" : " "} ${t.label} — ${t.url} @ ${t.viewport}`)

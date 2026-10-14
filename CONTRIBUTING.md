@@ -74,6 +74,11 @@ npm version minor        # or patch — see CHANGELOG conventions; commits and t
 git push --follow-tags
 ```
 
+`npx -y github:oljodev/mcp-agent-eyes update` (src/update.ts) reads the version
+from `main`'s package.json, so bumping it is what makes users see an update.
+Keep the update instructions in the README and the `agent-eyes://update`
+resource in step with that command.
+
 agent-eyes is installed straight from GitHub (`npx github:oljodev/mcp-agent-eyes`),
 so a release is a tag on `main` — there is no registry to publish to. The
 `prepare` script is what makes that work: it builds `dist/` on install, so keep

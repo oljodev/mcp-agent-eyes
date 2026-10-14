@@ -22,7 +22,13 @@ Swap `--agent` for `cursor`, `codex`, `zed`, or `vscode`. Drop `--write` to prin
 
 agent-eyes installs straight from GitHub — there's no npm package to add and nothing lands in your global `node_modules`. The first run builds from source and can take a minute; after that npx caches it and startup is instant.
 
-To update later, clear the cached copy and rerun the command: `rm -rf ~/.npm/_npx` (or pin a tag with `github:oljodev/mcp-agent-eyes#v0.28.0`).
+**Update** — one command, any time:
+
+```bash
+npx -y github:oljodev/mcp-agent-eyes update
+```
+
+It compares your version with `main`, clears the cached copy (npx installs) or runs `git pull` + build (clones), and rebuilds. Restart your agent afterwards. `update --check` only reports, and exits `10` when a newer version exists. Running agents can read the same instructions from the `agent-eyes://update` MCP resource, and every tool response ends with `[Metadata: agent-eyes vX.Y.Z]` to compare against. Coming from v0.29 or older (no `update` command yet)? Run `rm -rf ~/.npm/_npx` once, then the command above works from then on. To stay on a release, pin a tag: `github:oljodev/mcp-agent-eyes#v0.30.0`.
 
 **Requirements:** Node.js ≥ 20, and Chrome / Chromium / Edge (the installer tells you if it can't find one). **Nothing is installed globally and no browser is downloaded** — agent-eyes builds on `playwright-core` and drives the Chrome you already have.
 
@@ -257,6 +263,7 @@ Every response ends with a page-health block (console errors, failed requests, 4
 | `Nothing is listening at http://localhost:…` | Start your dev server first. |
 | The agent says it has no tools | Restart your agent after editing its MCP config. |
 | `npm error 404 … mcp-agent-eyes` | Your config names a bare package name. agent-eyes is installed from GitHub — the spec must be `github:oljodev/mcp-agent-eyes`. |
+| `update` hangs or just starts the server | The cached copy predates the `update` command (≤ v0.29). `rm -rf ~/.npm/_npx` once and retry. |
 | Server fails to start the first time, works after | The first `npx` run builds from source and can outlast your agent's MCP startup timeout. Run the install command once in a terminal, then restart your agent. |
 
 ---

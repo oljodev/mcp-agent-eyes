@@ -11,6 +11,14 @@ decision, not an automatic consequence of a change.
 
 ### Added
 
+- **One-command update.** `npx -y github:oljodev/mcp-agent-eyes update` clears
+  the cached copy (npx installs) or pulls and rebuilds (git clones);
+  `update --check` only reports, exiting `10` when a newer version exists, and
+  `version` prints the installed version. Agents find the instructions in the
+  server `instructions` field and the `agent-eyes://update` resource, and the
+  README documents it. Versions before 0.30 have no `update` command: clear
+  `~/.npm/_npx` once, then use it.
+
 - **`audit`** — one zero-image call that runs the cold-load CLS pass, layout
   diagnostics at all four breakpoints, the accessibility scan and the design
   review, and returns a summary table with a PASS/FAIL verdict followed by

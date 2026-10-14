@@ -9,6 +9,8 @@ decision, not an automatic consequence of a change.
 
 ## [Unreleased]
 
+## [0.30.0] — 2026-10-14
+
 ### Added
 
 - **One-command update.** `npx -y github:oljodev/mcp-agent-eyes update` clears

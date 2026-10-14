@@ -71,11 +71,24 @@ export async function navigateIfNeeded(
   // reported while the agent's page state survives untouched.
   await preflight(url);
 
-  try {
-    await page.goto(url, {
+  const go = (): Promise<unknown> =>
+    page.goto(url, {
       waitUntil: "domcontentloaded",
       timeout: NAVIGATION_TIMEOUT_MS,
     });
+  try {
+    try {
+      await go();
+    } catch (error) {
+      // After a failed navigation Chromium may still be committing the
+      // about:blank reset below; the next goto then loses that race. It is
+      // transient, so settle and try once more.
+      if (!/interrupted by another navigation/i.test(String(error))) {
+        throw error;
+      }
+      await page.waitForTimeout(250);
+      await go();
+    }
     core.lastNavigatedUrl = url;
   } catch (error) {
     core.lastNavigatedUrl = null;
@@ -88,6 +101,10 @@ export async function navigateIfNeeded(
     if (!timedOut || page.url() === url) {
       await page
         .goto("about:blank", { timeout: 5_000 })
+        .catch(() => undefined);
+      // Let the reset commit so it cannot interrupt the next navigation.
+      await page
+        .waitForURL("about:blank", { timeout: 2_000 })
         .catch(() => undefined);
     }
     throw new BrowserToolError(formatNavigationError(error, url));

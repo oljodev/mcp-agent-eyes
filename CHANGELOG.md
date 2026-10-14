@@ -27,6 +27,8 @@ decision, not an automatic consequence of a change.
 
 - A failed tool call no longer leaks its page-health entries (e.g. a refused
   navigation) into the next, unrelated response.
+- The first navigation after a failed one no longer errors with "interrupted by
+  another navigation to about:blank".
 
 ## [0.29.0] — 2026-09-18
 
